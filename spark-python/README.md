@@ -1,4 +1,4 @@
-# spark scala 学习
+# spark python 学习
 ## spark
    + MySpark  测试spark是否可用,集合求和
    + WordCount 统计文件单词数量

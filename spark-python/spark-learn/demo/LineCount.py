@@ -8,5 +8,5 @@ from pyspark import SparkConf, SparkContext
 if __name__ == '__main__':
     conf = SparkConf().setMaster('local').setAppName('LineCount')
     sc = SparkContext(conf=conf)
-    lines = sc.textFile("C:\\app\\spark-2.4.0-bin-hadoop2.7\\README.md")
+    lines = sc.textFile("D:\\java\\idea\\a2019\\sparklearn\\data\\小王子.txt")
     print(lines.count())
