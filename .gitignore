@@ -1,0 +1,11 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Scala template
+*.class
+*.log
+
+.idea/
+scalalearn/src/main/java/
+scalalearn/src/main/resources/
+scalalearn/src/test/
+scalalearn/target/
+sparklearn.iml
