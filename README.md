@@ -12,8 +12,8 @@
    
 ## spark-python 学习
    + [厦门租房信息分析展示（pycharm+python爬虫+pyspark+pyecharts）](http://dblab.xmu.edu.cn/blog/2307/)
-   见 [spark-python/spark-learn/fishrent/run.py]()
-   + WordCount 统计文件单词数量 见 [spark-python/spark-learn/demo/WordCount.py]()`
+   见 [spark-python/spark-learn/fishrent/run.py](https://github.com/CycloneBoy/sparklearn/blob/master/spark-python/spark-learn/fishrent/run.py)
+   + WordCount 统计文件单词数量 见 [spark-python/spark-learn/demo/WordCount.py](https://github.com/CycloneBoy/sparklearn/blob/master/spark-python/spark-learn/demo/WordCount.py)`
    
    
    
