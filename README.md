@@ -1,4 +1,4 @@
-# spark 学习(scala和python)
+# bigdata 学习(scala|spark|hbase)
 ## spark 
    + MySpark  测试spark是否可用,集合求和
    + WordCount 统计文件单词数量
@@ -6,7 +6,7 @@
    + DomainNamePartitioner 自定义的域名分区器
    + LearnRdd PersistRdd Rdd 学习
 
-## scala
+## scalaleaen scala学习
    + HelloWorld  scala hello word,测试scala环境可用
    + myFirstScala scala hello word
    
@@ -15,7 +15,8 @@
    见 [spark-python/spark-learn/fishrent/run.py](https://github.com/CycloneBoy/sparklearn/blob/master/spark-python/spark-learn/fishrent/run.py)
    + WordCount 统计文件单词数量 见 [spark-python/spark-learn/demo/WordCount.py](https://github.com/CycloneBoy/sparklearn/blob/master/spark-python/spark-learn/demo/WordCount.py)`
    
-   
+## hbaselearn HBase学习
+    + CRUD JAVA API 例子
    
 ## Issue 意见、建议
 
