@@ -18,6 +18,9 @@
 ## hbaselearn HBase学习
     + CRUD JAVA API 例子
    
+## hadoop hadoop的学习
++ 添加hadoop/ hdfs的读写
+   
 ## Issue 意见、建议
 
 如有勘误、意见或建议欢迎拍砖 <https://github.com/CycloneBoy/sparklearn/issues>
