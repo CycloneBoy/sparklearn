@@ -17,7 +17,7 @@
         <spark.version>2.4.0</spark.version>
         <scala.version>2.12</scala.version>
         <hadoop.version>3.0.3</hadoop.version>
-        <jackson.version>2.9.7</jackson.version>
+        <jackson.version>2.10.0</jackson.version>
     </properties>
 
     <dependencies>
