@@ -1,4 +1,4 @@
-package com.cycloneboy.bigdata.hadoop.common;
+package com.cycloneboy.bigdata.hadoop.hdfs.common;
 
 /**
  * Create by  sl on 2019-10-19 00:33

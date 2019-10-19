@@ -1,6 +1,8 @@
-package com.cycloneboy.bigdata.hadoop.hdfs;
+package com.cycloneboy.bigdata.hadoop.hdfs.hdfs;
 
-import static com.cycloneboy.bigdata.hadoop.common.Constants.HDFS_URI;
+
+
+import static com.cycloneboy.bigdata.hadoop.hdfs.common.Constants.HDFS_URI;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,6 +25,8 @@ import org.junit.Test;
 
 /**
  * Create by  sl on 2019-10-18 23:31
+ *
+ * hdfs的java client 操作
  */
 @Slf4j
 public class HdfsClient {
