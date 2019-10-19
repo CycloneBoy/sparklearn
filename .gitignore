@@ -3,6 +3,7 @@
 *.class
 *.log
 
+
 .idea/
 scalalearn/src/main/java/
 scalalearn/src/main/resources/
