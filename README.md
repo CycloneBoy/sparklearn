@@ -20,6 +20,9 @@
    
 ## hadoop hadoop的学习
 + 添加hadoop/ hdfs的读写
++ 添加mapreduce 学习
++ 流量统计
++ 分区排序
    
 ## Issue 意见、建议
 
