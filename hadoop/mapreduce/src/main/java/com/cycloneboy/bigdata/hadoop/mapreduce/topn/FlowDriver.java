@@ -1,4 +1,4 @@
-package com.cycloneboy.bigdata.hadoop.mapreduce.flow;
+package com.cycloneboy.bigdata.hadoop.mapreduce.topn;
 
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
@@ -8,12 +8,7 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-/**
- * Create by sl on 2019-10-19 15:57
- *
- * <p>输出流量使用量前十的<br>
- * 用户信息 对需求2.3输出结果进行加工，输出流量使用量在前10的用户信息
- */
+/** Create by sl on 2019-10-24 10:40 */
 public class FlowDriver {
 
   public static void main(String[] args)
@@ -29,11 +24,13 @@ public class FlowDriver {
     job.setReducerClass(FlowReducer.class);
 
     // 4 设置输入输出类型
-    job.setMapOutputKeyClass(Text.class);
-    job.setMapOutputValueClass(FlowBean.class);
+    job.setMapOutputKeyClass(FlowBean.class);
+    job.setMapOutputValueClass(Text.class);
 
     job.setOutputKeyClass(Text.class);
-    job.setOutputValueClass(FlowBean.class);
+    job.setOutputValueClass(Text.class);
+
+    job.setGroupingComparatorClass(FlowComparator.class);
 
     // 5 设置输入输出路径
     FileInputFormat.setInputPaths(job, new Path(args[0]));

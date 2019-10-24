@@ -48,3 +48,7 @@
 //  FileOutputFormat.setOutputCompressorClass(job, GzipCodec.class); 
 //  FileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class); 
 ```
+## MapReduce总结练习
+1. 文件的倒排索引
+2. topn 获取流量前十的用户信息
+3. 找博客共同好友案例

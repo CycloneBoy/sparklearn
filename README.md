@@ -32,6 +32,11 @@
 + Map输出端采用压缩
 + Reduce输出端采用压缩    
    
+### MapReduce总结练习
+1. 文件的倒排索引
+2. topn 获取流量前十的用户信息
+3. 找博客共同好友
+
 ## Issue 意见、建议
 
 如有勘误、意见或建议欢迎拍砖 <https://github.com/CycloneBoy/sparklearn/issues>
