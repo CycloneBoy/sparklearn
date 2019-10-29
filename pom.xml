@@ -12,6 +12,7 @@
         <module>scalalearn</module>
         <module>hbaselearn</module>
         <module>hadoop</module>
+        <module>zookeeper</module>
     </modules>
 
 

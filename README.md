@@ -9,6 +9,7 @@
 ## scalaleaen scala学习
    + HelloWorld  scala hello word,测试scala环境可用
    + myFirstScala scala hello word
+   + 继续学习scala
    
 ## spark-python 学习
    + [厦门租房信息分析展示（pycharm+python爬虫+pyspark+pyecharts）](http://dblab.xmu.edu.cn/blog/2307/)
@@ -36,6 +37,11 @@
 1. 文件的倒排索引
 2. topn 获取流量前十的用户信息
 3. 找博客共同好友
+
+## zookeeper学习
+1. 基本命令行使用
+2. 基本api使用
+3. 原理学习
 
 ## Issue 意见、建议
 
