@@ -43,6 +43,10 @@
 2. 基本api使用
 3. 原理学习
 
+## Hive学习
+1. 基本的sql学习
+2. 自定义函数(UDF)
+
 ## Issue 意见、建议
 
 如有勘误、意见或建议欢迎拍砖 <https://github.com/CycloneBoy/sparklearn/issues>
