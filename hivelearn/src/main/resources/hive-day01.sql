@@ -732,3 +732,567 @@ show functions;
 desc function upper;
 
 desc function extended upper;
+
+
+-- 自定义函数
+add jar /opt/module/datas/udf.jar;
+
+create temporary function mylower as 'com.cycloneboy.bigdata.hivelearn.Lower';
+
+-- 存储格式测试
+-- 创建表
+create table log_text
+(
+    track_time  string,
+    url         string,
+    session_id  string,
+    referer     string,
+    ip          string,
+    end_user_id string,
+    city_id     string
+)
+    row format delimited fields terminated by '\t'
+    stored as textfile;
+
+-- 加载数据
+load data local inpath '/opt/module/datas/log.data' into table log_text;
+
+-- 查看表中的数据大小
+dfs -du -h /user/hive/warehouse/log_text;
+
+select *
+from log_text;
+
+
+-- 创建orc格式的表
+-- 创建表
+create table log_orc
+(
+    track_time  string,
+    url         string,
+    session_id  string,
+    referer     string,
+    ip          string,
+    end_user_id string,
+    city_id     string
+)
+    row format delimited fields terminated by '\t'
+    stored as orc;
+
+-- 加载数据
+-- load data local inpath '/opt/module/datas/log.data' into table log_orc;
+insert into table log_orc
+select *
+from log_text;
+
+
+-- 查看表中的数据大小
+dfs -du -h /user/hive/warehouse/log_orc;
+
+select *
+from log_orc;
+
+
+-- 创建parquet格式的表
+-- 创建表
+create table log_parquet
+(
+    track_time  string,
+    url         string,
+    session_id  string,
+    referer     string,
+    ip          string,
+    end_user_id string,
+    city_id     string
+)
+    row format delimited fields terminated by '\t'
+    stored as parquet;
+
+-- 加载数据
+-- load data local inpath '/opt/module/datas/log.data' into table log_orc;
+insert into table log_parquet
+select *
+from log_text;
+
+
+-- 查看表中的数据大小
+dfs -du -h /user/hive/warehouse/log_parquet;
+
+select *
+from log_parquet;
+
+-- 查询性能
+select count(*)
+from log_text;
+select count(*)
+from log_orc;
+select count(*)
+from log_parquet;
+
+-- 创建一个非压缩的的ORC存储方式
+-- 创建表
+create table log_orc_none
+(
+    track_time  string,
+    url         string,
+    session_id  string,
+    referer     string,
+    ip          string,
+    end_user_id string,
+    city_id     string
+)
+    row format delimited fields terminated by '\t'
+    stored as orc tblproperties ("orc.compress" = "NONE");
+
+-- 加载数据
+-- load data local inpath '/opt/module/datas/log.data' into table log_orc;
+insert into table log_orc_none
+select *
+from log_text;
+
+
+-- 查看表中的数据大小
+dfs -du -h /user/hive/warehouse/log_orc_none;
+
+select *
+from log_orc_none;
+
+-- 创建一个SNAPPY压缩的ORC存储方式
+-- 创建表
+create table log_orc_snappy
+(
+    track_time  string,
+    url         string,
+    session_id  string,
+    referer     string,
+    ip          string,
+    end_user_id string,
+    city_id     string
+)
+    row format delimited fields terminated by '\t'
+    stored as orc tblproperties ("orc.compress" = "SNAPPY");
+
+-- 加载数据
+-- load data local inpath '/opt/module/datas/log.data' into table log_orc;
+insert into table log_orc_snappy
+select *
+from log_text;
+
+
+-- 查看表中的数据大小
+dfs -du -h /user/hive/warehouse/log_orc_snappy;
+
+select *
+from log_orc_snappy;
+
+-- hive 优化
+-- 本地模式
+-- 开启本地MR
+set hive.exec.mode.local.auto=true;
+
+-- 设置local mr的最大输入数据量，当输入数据量小于这个值时采用local  mr的方式，默认为134217728，即128M
+set hive.exec.mode.local.auto.inputbytes.max=50000000;
+
+-- 设置local mr的最大输入文件个数，当输入文件个数小于这个值时采用local mr的方式，默认为4
+set hive.exec.mode.local.auto.input.files.max=10;
+
+
+-- Hive 项目实战 2019-11-01
+-- 需求: 统计硅谷影音视频网站的常规指标，各种TopN指标：
+
+--统计视频观看数Top10
+--统计视频类别热度Top10
+--统计视频观看数Top20所属类别
+--统计视频观看数Top50所关联视频的所属类别Rank
+--统计每个类别中的视频热度Top10
+--统计每个类别中视频流量Top10
+--统计上传视频最多的用户Top10以及他们上传的视频
+--统计每个类别视频观看数Top10
+
+-- 创建视频表
+create table gulivideo_ori
+(
+    videoId   string,
+    uploader  string,
+    age       int,
+    category  array<string>,
+    length    int,
+    views     int,
+    rate      float,
+    ratings   int,
+    comments  int,
+    relatedId array<string>
+)
+    row format delimited fields terminated by '\t'
+        collection items terminated by "&"
+    stored as textfile;
+
+-- 创建用户表
+create table gulivideo_user_ori
+(
+    uploader string,
+    videos   int,
+    friends  int
+)
+    row format delimited fields terminated by '\t'
+    stored as textfile;
+
+-- 创建视频ORC表
+create table gulivideo_orc
+(
+    videoId   string,
+    uploader  string,
+    age       int,
+    category  array<string>,
+    length    int,
+    views     int,
+    rate      float,
+    ratings   int,
+    comments  int,
+    relatedId array<string>
+)
+    row format delimited fields terminated by '\t'
+        collection items terminated by "&"
+    stored as orc;
+
+-- 创建用户ORC表
+create table gulivideo_user_orc
+(
+    uploader string,
+    videos   int,
+    friends  int
+)
+    row format delimited fields terminated by '\t'
+    stored as orc;
+
+-- 导入etl后的数据
+load data local inpath "/opt/module/datas/video_output" into table gulivideo_ori;
+load data local inpath "/opt/module/datas/user" into table gulivideo_user_ori;
+
+-- 查询数据
+select *
+from gulivideo_ori
+limit 5;
+select *
+from gulivideo_user_ori
+limit 5;
+
+-- 向 orc 表中插入数据
+insert into table gulivideo_orc
+select *
+from gulivideo_ori;
+insert into table gulivideo_user_orc
+select *
+from gulivideo_user_ori;
+
+-- 查询数据
+select count(*)
+from gulivideo_orc;
+select count(*)
+from gulivideo_user_orc;
+
+-- 第一题
+-- 统计视频观看数Top10
+-- 思路：使用order by按照views字段做一个全局排序即可，同时我们设置只显示前10条。
+select videoId, uploader, age, category, length, views, rate, ratings, comments
+from gulivideo_ori
+order by views
+desc limit 10;
+
+-- 第二题
+-- 	统计视频类别热度Top10
+--	思路：
+--	1) 即统计每个类别有多少个视频，显示出包含视频最多的前10个类别。
+--	2) 我们需要按照类别group by聚合，然后count组内的videoId个数即可。
+--	3) 因为当前表结构为：一个视频对应一个或多个类别。所以如果要group by类别，需要先将类别进行列转行(展开)，然后再进行count即可。
+--	4) 最后按照热度排序，显示前10条。
+
+
+-- 1. 根据类别显示视频
+select videoId, category_name
+from gulivideo_ori lateral view explode(category) t_catetory as category_name;
+
+-- 2. 最终统计
+select category_name     as category,
+       count(t1.videoId) as hot
+from t1
+group by t1.category_name
+order by hot desc
+limit 10;
+
+select category_name     as category,
+       count(t1.videoId) as hot
+from (select videoId, category_name
+      from gulivideo_ori lateral view explode(category) t_catetory as category_name) t1
+group by t1.category_name
+order by hot desc
+limit 10;
+
+-- 结果
+category	hot
+Music	179049
+Entertainment	127674
+Comedy	87818
+Animation	73293
+Film	73293
+Sports	67329
+Games	59817
+Gadgets	59817
+People	48890
+Blogs	48890
+
+-- 第三题
+-- 统计出视频观看数最高的20个视频的所属类别以及类别包含Top20视频的个数
+--	思路：
+--	1) 先找到观看数最高的20个视频所属条目的所有信息，降序排列
+--	2) 把这20条信息中的category分裂出来(列转行)
+--	3) 最后查询视频分类名称和该分类下有多少个Top20的视频
+
+-- 查询观看次数最高的20个视频的类别
+select *
+from gulivideo_ori
+order by views desc limit 20;
+
+
+-- 炸开视频类别
+select videoId, category_name
+from ( t1 lateral view explode(category) t_catetory as category_name ) t2
+group by category_name;
+
+-- 最终查询
+select category_name     as category,
+       count(t2.videoId) as hot_with_views
+from t2
+order by hot_with_views desc;
+
+
+
+select category_name as category, count(t2.videoId) as hot_with_views
+from (select videoId, category_name
+      from (select * from gulivideo_ori order by views desc limit 20) t1
+               lateral view explode(category) t_catetory as category_name) t2
+group by category_name
+order by hot_with_views desc;
+
+-- 结果
+category	hot_with_views
+Entertainment	6
+Comedy	6
+Music	5
+People	2
+Blogs	2
+UNA	1
+
+
+-- 第四题
+-- 统计视频观看数Top50所关联视频的所属类别排序
+
+-- 1)查询出观看数最多的前50个视频的所有信息(当然包含了每个视频对应的关联视频)，记为临时表t1
+-- t1：观看数前50的视频
+select *
+from gulivideo_ori
+order by views desc limit 50;
+
+-- 2)将找到的50条视频信息的相关视频relatedId列转行，记为临时表t2
+-- t2：将相关视频的id进行列转行操作
+select explode(relatedId) as videoId
+from t1;
+
+-- 3)将相关视频的id和gulivideo_orc表进行inner join操作
+-- t5：得到两列数据，一列是category，一列是之前查询出来的相关视频id
+(select distinct(t2.videoId), t3.category
+ from t2
+          inner join gulivideo_ori t3 t2.videoId = t3.videoId)
+t4
+lateral view explode(category) t_catetory as category_name;
+
+
+-- 4) 按照视频类别进行分组，统计每组视频个数，然后排行
+select category_name as category, count(t5.videoId) as hot
+from (select videoId, category_name
+      from (select distinct(t2.videoId), t3.category
+            from (select explode(relatedId) as videoId
+                  from (select * from gulivideo_ori order by views desc limit 50) t1) t2
+                     inner join gulivideo_ori t3 t2.videoId = t3.videoId) t4
+               lateral view explode(category) t_catetory as category_name) t5
+group by category_name
+order by hot desc;
+
+
+-- 最终查询语句
+
+select category_name     as category,
+       count(t5.videoId) as hot
+from (
+         select videoId,
+                category_name
+         from (
+                  select distinct(t2.videoId),
+                                 t3.category
+                  from (
+                           select explode(relatedId) as videoId
+                           from (
+                                    select *
+                                    from gulivideo_ori
+                                    order by
+                                        views
+                                        desc limit
+                                        50) t1) t2
+                           inner join
+                       gulivideo_ori t3 on t2.videoId = t3.videoId) t4 lateral view explode(category) t_catetory as category_name) t5
+group by category_name
+order by hot
+    desc;
+
+-- 结果
+category	hot
+Comedy	232
+Entertainment	216
+Music	195
+Blogs	51
+People	51
+Film	47
+Animation	47
+News	22
+Politics	22
+Games	20
+Gadgets	20
+Sports	19
+Howto	14
+DIY	14
+UNA	13
+Places	12
+Travel	12
+Animals	11
+Pets	11
+Autos	4
+Vehicles	4
+
+
+-- 第五题
+--	统计每个类别中的视频热度Top10，以Music为例
+--	思路：
+--	1) 要想统计Music类别中的视频热度Top10，需要先找到Music类别，那么就需要将category展开，所以可以创建一张表用于存放categoryId展开的数据。
+--	2) 向category展开的表中插入数据。
+--	3) 统计对应类别（Music）中的视频热度。
+
+-- 1) 创建表类别表
+create table gulivideo_category
+(
+    videoId    string,
+    uploader   string,
+    age        int,
+    categoryId string,
+    length     int,
+    views      int,
+    rate       float,
+    ratings    int,
+    comments   int,
+    relatedId  array<string>
+)
+    row format delimited fields terminated by '\t'
+        collection items terminated by '&'
+    stored as textfile;
+
+-- 向类别表中插入数据
+insert into table gulivideo_category
+select videoId, uploader, age, categoryId, length, views, rate, ratings, comments, relatedId
+from gulivideo_ori lateral view explode(category) t_catetory as categoryId;
+
+-- 统计Music类别的Top10（也可以统计其他）
+select videoId, views
+from gulivideo_category
+where categoryId="Music"
+order by views desc limit 10;
+
+-- 结果
+videoid	views
+QjA5faZF1A8	15256922
+tYnn51C3X_w	11823701
+pv5zWaTEVkI	11672017
+8bbTtPL1jRs	9579911
+UMf40daefsI	7533070
+-xEzGIuY7kw	6946033
+d6C0bNDqf3Y	6935578
+HSoVKUVOnfQ	6193057
+3URfWTEPmtE	5581171
+thtmaZnxk_0	5142238
+
+
+
+-- 第六题
+--统计每个类别中视频流量Top10，以Music为例
+-- 思路：
+--	1) 创建视频类别展开表（categoryId列转行后的表）
+--  2) 按照ratings排序即可
+select videoId, views, ratings
+from gulivideo_category
+where categoryId="Music"
+order by ratings desc limit 10;
+
+-- 结果
+videoid	views	ratings
+QjA5faZF1A8	15256922	120506
+pv5zWaTEVkI	11672017	42386
+UMf40daefsI	7533070	31886
+tYnn51C3X_w	11823701	29479
+59ZX5qdIEB0	1814798	21481
+FLn45-7Pn2Y	3604114	21249
+-xEzGIuY7kw	6946033	20828
+HSoVKUVOnfQ	6193057	19803
+ARHyRI9_NB4	1237802	19243
+gg5_mlQOsUQ	2595278	19190
+
+
+
+-- 第七题
+-- 统计上传视频最多的用户Top10以及他们上传的观看次数在前20的视频
+--	思路：
+--	1) 先找到上传视频最多的10个用户的用户信息
+select *
+from gulivideo_user_ori
+order by videos desc
+limit 10;
+
+-- 2) 通过uploader字段与gulivideo_orc表进行join，得到的信息按照views观看次数进行排序即可。
+select t2.videoId, t2.views, t2.ratings, t1.videos, t1.friends
+from (select * from gulivideo_user_ori order by videos desc limit 10) t1
+         join gulivideo_ori t2 on t1.uploader = t2.uploader
+order by views desc limit 20;
+
+-- 结果
+t2.videoid	t2.views	t2.ratings	t1.videos	t1.friends
+-IxHBW0YpZw	39059	84	86228	5659
+BU-fT5XI_8I	29975	34	86228	5659
+ADOcaBYbMl0	26270	40	86228	5659
+yAqsULIDJFE	25511	53	86228	5659
+vcm-t0TJXNg	25366	27	86228	5659
+0KYGFawp14c	24659	41	86228	5659
+j4DpuPvMLF4	22593	28	86228	5659
+Msu4lZb2oeQ	18822	35	86228	5659
+ZHZVj44rpjE	16304	26	86228	5659
+foATQY3wovI	13576	31	86228	5659
+-UnQ8rcBOQs	13450	25	86228	5659
+crtNd46CDks	11639	25	86228	5659
+D1leA0JKHhE	11553	25	86228	5659
+NJu2oG1Wm98	11452	21	86228	5659
+CapbXdyv4j4	10915	15	86228	5659
+epr5erraEp4	10817	24	86228	5659
+IyQoDgaLM7U	10597	22	86228	5659
+tbZibBnusLQ	10402	13	86228	5659
+_GnCHodc7mk	9422	17	86228	5659
+hvEYlSlRitU	7123	17	86228	5659
+
+
+-- 第八题
+--	统计每个类别视频观看数Top10
+--	思路：
+--	1) 先得到categoryId展开的表数据
+--	2) 子查询按照categoryId进行分区，然后分区内排序，并生成递增数字，该递增数字这一列起名为rank列
+--	3) 通过子查询产生的临时表，查询rank值小于等于10的数据行即可。
+
+select t1.*
+from (select videoId,
+             categoryId, views, row_number() over (partition by categoryId order by views desc) rank
+      from gulivideo_category) t1
+where rank <= 10;
