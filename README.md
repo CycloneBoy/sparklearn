@@ -70,6 +70,7 @@
 1. 自定义source
 2. 自定义sink
 3. 自定义source ,实时监控MySQL，从MySQL中获取数据传输到HDFS或者其他存储框架
+4. flume的配置文件实例
 
 ## Issue 意见、建议
 
