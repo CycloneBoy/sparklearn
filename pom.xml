@@ -14,6 +14,7 @@
     <module>hadoop</module>
     <module>zookeeper</module>
     <module>hivelearn</module>
+    <module>flumelearn</module>
   </modules>
 
 
@@ -26,7 +27,13 @@
 
     <junit.version>4.12</junit.version>
     <lombok.version>1.18.8</lombok.version>
+
+    <hadoop.version>3.1.2</hadoop.version>
+    <JAVA_HOME>/home/sl/app/jdk1.8.0_221</JAVA_HOME>
+    <mysql.version>8.0.16</mysql.version>
+
     <hive.version>3.1.1</hive.version>
+    <flume.version>1.9.0</flume.version>
   </properties>
 
   <dependencies>
@@ -66,7 +73,7 @@
       <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
-        <version>8.0.16</version>
+        <version>${mysql.version}</version>
       </dependency>
 
       <!-- https://mvnrepository.com/artifact/org.apache.hive/hive-exec -->
@@ -74,6 +81,37 @@
         <groupId>org.apache.hive</groupId>
         <artifactId>hive-exec</artifactId>
         <version>${hive.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.flume</groupId>
+        <artifactId>flume-ng-core</artifactId>
+        <version>${flume.version}</version>
+      </dependency>
+
+      <!-- hadoop 依赖-->
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-common</artifactId>
+        <version>${hadoop.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-client</artifactId>
+        <version>${hadoop.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-hdfs</artifactId>
+        <version>${hadoop.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>jdk.tools</groupId>
+        <artifactId>jdk.tools</artifactId>
+        <version>jdk1.8.0_212</version>
+        <scope>system</scope>
+        <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
       </dependency>
 
     </dependencies>

@@ -66,6 +66,10 @@
 
 5.TODO:  Hive Java api 学习
 
+## flume学习
+1. 自定义source
+2. 自定义sink
+
 ## Issue 意见、建议
 
 如有勘误、意见或建议欢迎拍砖 <https://github.com/CycloneBoy/sparklearn/issues>
