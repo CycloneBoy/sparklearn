@@ -119,5 +119,39 @@ def product4 = product _
 product4(2, 2, 3)
 
 
+// 偏函数
+
+val sample = 1 to 10
+
+val isEven: PartialFunction[Int, String] = {
+  case x if x % 2 == 0 => x + " is even"
+}
+
+isEven(10)
+
+isEven(11)
+
+sample.collect(isEven)
+
+val isOdd: PartialFunction[Int, String] = {
+  case x if x % 2 == 1 => x + " is odd"
+}
+
+isOdd(11)
+
+val numbers = sample.map(isEven orElse isOdd)
+
+numbers
+
+def receive: PartialFunction[Any, Unit] = {
+  case x: Int => println("Int type")
+  case x: String => println("String type")
+  case _ => println("other type")
+}
+
+
+receive(10)
+receive("hhh")
+receive(1.1)
 
 

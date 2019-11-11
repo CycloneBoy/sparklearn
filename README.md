@@ -11,6 +11,9 @@
    + myFirstScala scala hello word
    + 继续学习scala
    
+### scala基础语法学习
+  1. 函数,高阶函数,函数闭包,函数科里化,部分应用函数,偏函数
+   
 ## spark-python 学习
    + [厦门租房信息分析展示（pycharm+python爬虫+pyspark+pyecharts）](http://dblab.xmu.edu.cn/blog/2307/)
    见 [spark-python/spark-learn/fishrent/run.py](https://github.com/CycloneBoy/sparklearn/blob/master/spark-python/spark-learn/fishrent/run.py)

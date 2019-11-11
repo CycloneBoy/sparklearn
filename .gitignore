@@ -3,10 +3,6 @@
 *.class
 *.log
 
-
 .idea/
-scalalearn/src/main/java/
-scalalearn/src/main/resources/
-scalalearn/src/test/
-scalalearn/target/
-sparklearn.iml
+./*/target/
+
