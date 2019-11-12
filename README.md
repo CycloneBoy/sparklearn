@@ -15,7 +15,7 @@
   1. 函数,高阶函数,函数闭包,函数科里化,部分应用函数,偏函数
   2. 模式匹配和隐式转换
   3. 类型参数和高级类型
-  ``text
+  ```text
 
       类型界定  T <: R  限制T的最顶层类R,上界R
       类型界定  T >: R  限制T必须是R的超类,下界R
@@ -23,7 +23,6 @@
       类型变量界定要求类在类继承层次结构上
       视图界定不但可以在类继承层次结构上,还可以跨越类继承层次结构
   ```
- 
 ## spark-python 学习
    + [厦门租房信息分析展示（pycharm+python爬虫+pyspark+pyecharts）](http://dblab.xmu.edu.cn/blog/2307/)
    见 [spark-python/spark-learn/fishrent/run.py](https://github.com/CycloneBoy/sparklearn/blob/master/spark-python/spark-learn/fishrent/run.py)
