@@ -23,6 +23,14 @@
       类型变量界定要求类在类继承层次结构上
       视图界定不但可以在类继承层次结构上,还可以跨越类继承层次结构
   ```
+  4. akka编程 基础
+  ```text
+    actor
+    Typed Actor
+    dispatcher 调度 -BalancingDispatcher 按照消息的优先级进行处理,高优先级的先处理
+    Router
+    容错
+   ```
 ## spark-python 学习
    + [厦门租房信息分析展示（pycharm+python爬虫+pyspark+pyecharts）](http://dblab.xmu.edu.cn/blog/2307/)
    见 [spark-python/spark-learn/fishrent/run.py](https://github.com/CycloneBoy/sparklearn/blob/master/spark-python/spark-learn/fishrent/run.py)
