@@ -19,6 +19,7 @@
     <hadoop.version>3.1.2</hadoop.version>
     <jackson.version>2.9.0</jackson.version>
     <akka.version>2.5.10</akka.version>
+    <spark.kafka.version>1.6.3</spark.kafka.version>
   </properties>
 
   <dependencies>
@@ -52,6 +53,13 @@
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-mllib_${scala.version}</artifactId>
       <version>${spark.version}</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming-kafka_2.11</artifactId>
+      <version>${spark.kafka.version}</version>
     </dependency>
 
 
