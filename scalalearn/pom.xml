@@ -17,7 +17,7 @@
     <spark.version>2.4.0</spark.version>
     <scala.version>2.12</scala.version>
     <hadoop.version>3.1.2</hadoop.version>
-    <jackson.version>2.10.0</jackson.version>
+    <jackson.version>2.9.0</jackson.version>
     <akka.version>2.5.10</akka.version>
   </properties>
 
@@ -81,6 +81,13 @@
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-scala_${scala.version}</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>com.opencsv</groupId>
       <artifactId>opencsv</artifactId>
@@ -88,11 +95,11 @@
     </dependency>
 
     <!-- akka -->
-<!--    <dependency>-->
-<!--      <groupId>com.typesafe.akka</groupId>-->
-<!--      <artifactId>akka-actor-typed_${scala.version}</artifactId>-->
-<!--      <version>${akka.version}</version>-->
-<!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>com.typesafe.akka</groupId>-->
+    <!--      <artifactId>akka-actor-typed_${scala.version}</artifactId>-->
+    <!--      <version>${akka.version}</version>-->
+    <!--    </dependency>-->
 
     <dependency>
       <groupId>com.typesafe.akka</groupId>

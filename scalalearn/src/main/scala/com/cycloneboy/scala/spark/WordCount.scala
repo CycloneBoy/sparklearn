@@ -4,6 +4,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 
 
 object WordCount {
+
   def main(args: Array[String]) {
 
     /**
@@ -13,11 +14,14 @@ object WordCount {
     val conf = new SparkConf()
       .setMaster("local") //启动本地化计算7
       .setAppName("WordCount") //设置本程序名称
+    //    conf.set("spark.eventLog.enabled", "true")
 
     //Spark程序的编写都是从SparkContext开始的
     val sc = new SparkContext(conf)
+
     //以上的语句等价与val sc=new SparkContext("local","testRdd")
-    val data = sc.textFile("/home/sl/workspace/java/a2019/sparklearn/data/小王子.txt") //读取本地文件
+    //    val data = sc.textFile("/home/sl/workspace/java/a2019/sparklearn/data/小王子.txt") //读取本地文件
+    val data = sc.textFile("hdfs://localhost:9000/user/sl/README.md") //读取本地文件
     var result = data.flatMap(_.split(" ")) //下划线是占位符，flatMap是对行操作的方法，对读入的数据进行分割
       .map((_, 1)) //将每一项转换为key-value，数据是key，value是1
       .reduceByKey(_ + _) //将具有相同key的项相加合并成一个
@@ -26,7 +30,7 @@ object WordCount {
       .foreach(println) //循环打印
 
     Thread.sleep(10000)
-    result.saveAsTextFile("/home/sl/workspace/java/a2019/sparklearn/data/wordcountres.txt")
+    result.saveAsTextFile("hdfs://localhost:9000/user/sl/wordcountres.txt")
     println("OK,over!")
   }
 }
