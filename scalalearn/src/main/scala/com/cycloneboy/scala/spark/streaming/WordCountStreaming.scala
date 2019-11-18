@@ -26,7 +26,7 @@ object WordCountStreaming {
     val sc = new SparkContext(conf)
 
     val ssc = new StreamingContext(sc, Seconds(5))
-      .checkpoint("data/spark/checkpoint")
+    //      .checkpoint("data/spark/checkpoint")
 
     val lines = ssc.socketTextStream("localhost", 9900)
 

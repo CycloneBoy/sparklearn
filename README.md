@@ -1,3 +1,5 @@
+[TOC]
+
 # bigdata 学习(scala|spark|hbase)
 ## spark 
    + MySpark  测试spark是否可用,集合求和
@@ -31,6 +33,22 @@
     Router
     容错
    ```
+## spark 学习
+### spark-core
+
+### spark-sql
+
+### spark-streaming
+
+### spark实战-电商分析平台
+
+### spark实战-实时项目
+
+### spark-mllib
+
+### spark性能调优
+
+
 ## spark-python 学习
    + [厦门租房信息分析展示（pycharm+python爬虫+pyspark+pyecharts）](http://dblab.xmu.edu.cn/blog/2307/)
    见 [spark-python/spark-learn/fishrent/run.py](https://github.com/CycloneBoy/sparklearn/blob/master/spark-python/spark-learn/fishrent/run.py)
@@ -91,6 +109,20 @@
 2. 自定义sink
 3. 自定义source ,实时监控MySQL，从MySQL中获取数据传输到HDFS或者其他存储框架
 4. flume的配置文件实例
+
+## flink学习
+
+## storm学习
+
+## kafka学习
+
+## elasticsearch学习
+
+## ELK学习
+
+## 数据挖掘和机器学习
+
+
 
 ## Issue 意见、建议
 

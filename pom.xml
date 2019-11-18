@@ -31,6 +31,7 @@
     <hadoop.version>3.1.2</hadoop.version>
     <JAVA_HOME>/home/sl/app/jdk1.8.0_221</JAVA_HOME>
     <mysql.version>8.0.16</mysql.version>
+    <junit.version>4.12</junit.version>
 
     <hive.version>3.1.1</hive.version>
     <flume.version>1.9.0</flume.version>
