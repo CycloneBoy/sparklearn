@@ -26,6 +26,7 @@
     <junit.version>4.12</junit.version>
     <opencsv.vesion>4.4</opencsv.vesion>
     <guava.vesion>19.0</guava.vesion>
+    <scalafx.version>12.0.1-R17</scalafx.version>
   </properties>
 
   <dependencies>
@@ -139,6 +140,13 @@
       <artifactId>guava</artifactId>
       <version>${guava.vesion}</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.scalafx</groupId>
+      <artifactId>scalafx_2.12</artifactId>
+      <version>${scalafx.version}</version>
+    </dependency>
+
 
   </dependencies>
 
