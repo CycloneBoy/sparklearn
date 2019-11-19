@@ -75,12 +75,13 @@
       <version>${kafka.client.version}</version>
     </dependency>
 
-
+    <!-- mysql -->
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
       <version>${mysql.version}</version>
     </dependency>
+    <!-- junit -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -145,6 +146,21 @@
       <groupId>org.scalafx</groupId>
       <artifactId>scalafx_2.12</artifactId>
       <version>${scalafx.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.fusesource.jansi</groupId>
+      <artifactId>jansi-project</artifactId>
+      <version>1.12</version>
+      <type>pom</type>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.fusesource</groupId>
+      <artifactId>fusesource-pom</artifactId>
+      <version>1.12</version>
+      <type>pom</type>
     </dependency>
 
 
