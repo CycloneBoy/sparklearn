@@ -10,6 +10,8 @@
 -- grant all privileges on *.* to 'hive'@'%' identified by 'hive' with  grant  option;
 -- GRANT ALL PRIVILEGES ON *.* to 'hive'@'%' IDENTIFIED BY 'hive' WITH GRANT OPTION;
 
+-- hive启动metastore
+-- $HIVE_HOME/bin/hive --service metastore
 
 -- 10.30
 create table student
@@ -1202,7 +1204,7 @@ from gulivideo_ori lateral view explode(category) t_catetory as categoryId;
 -- 统计Music类别的Top10（也可以统计其他）
 select videoId, views
 from gulivideo_category
-where categoryId="Music"
+where categoryId = "Music"
 order by views desc limit 10;
 
 -- 结果
@@ -1227,8 +1229,9 @@ thtmaZnxk_0	5142238
 --  2) 按照ratings排序即可
 select videoId, views, ratings
 from gulivideo_category
-where categoryId="Music"
-order by ratings desc limit 10;
+where categoryId = "Music"
+order by ratings desc
+limit 10;
 
 -- 结果
 videoid	views	ratings

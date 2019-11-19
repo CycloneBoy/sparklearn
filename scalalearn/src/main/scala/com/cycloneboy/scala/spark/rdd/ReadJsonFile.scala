@@ -7,6 +7,8 @@ import scala.util.parsing.json.JSON
 /**
  *
  * Create by  sl on 2019-11-19 16:22
+ *
+ * val df = spark.read.json("dfs://localhost:9000/user/sl/spark/user.json")
  */
 object ReadJsonFile {
 
