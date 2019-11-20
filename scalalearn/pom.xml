@@ -27,6 +27,7 @@
     <opencsv.vesion>4.4</opencsv.vesion>
     <guava.vesion>19.0</guava.vesion>
     <scalafx.version>12.0.1-R17</scalafx.version>
+    <hive.version>1.2.1</hive.version>
   </properties>
 
   <dependencies>
@@ -36,6 +37,7 @@
       <version>2.8</version>
     </dependency>
 
+    <!-- spark  -->
     <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-core_${scala.version}</artifactId>
@@ -68,18 +70,25 @@
       <version>${spark.version}</version>
     </dependency>
 
-
     <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-streaming-kafka_2.11</artifactId>
       <version>${spark.kafka.version}</version>
     </dependency>
 
+    <!-- kafka -->
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-clients</artifactId>
       <version>${kafka.client.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.hive</groupId>
+      <artifactId>hive-exec</artifactId>
+      <version>${hive.version}</version>
+    </dependency>
+
 
     <!-- mysql -->
     <dependency>
@@ -94,6 +103,7 @@
       <version>${junit.version}</version>
     </dependency>
 
+    <!-- jackson -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
@@ -116,6 +126,7 @@
       <version>${jackson.version}</version>
     </dependency>
 
+    <!-- opencsv-->
     <dependency>
       <groupId>com.opencsv</groupId>
       <artifactId>opencsv</artifactId>
@@ -129,6 +140,7 @@
     <!--      <version>${akka.version}</version>-->
     <!--    </dependency>-->
 
+    <!-- akka -->
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-actor_${scala.version}</artifactId>
@@ -141,13 +153,14 @@
       <version>1.4.0</version>
     </dependency>
 
-
+    <!-- guava -->
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>${guava.vesion}</version>
     </dependency>
 
+    <!-- scalafx -->
     <dependency>
       <groupId>org.scalafx</groupId>
       <artifactId>scalafx_2.12</artifactId>
