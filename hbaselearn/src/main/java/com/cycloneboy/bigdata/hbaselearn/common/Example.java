@@ -79,14 +79,8 @@ public class Example {
     Configuration config = HBaseConfiguration.create();
 
     // Add any necessary configuration files (hbase-site.xml, core-site.xml)
-    config.addResource(
-        new Path(
-            "/home/sl/workspace/java/a2019/sparklearn/hbaselearn/src/main/resources",
-            "hbase-site.xml"));
-    config.addResource(
-        new Path(
-            "/home/sl/workspace/java/a2019/sparklearn/hbaselearn/src/main/resources",
-            "core-site.xml"));
+    config.addResource(new Path(System.getenv("HBASE_CONF_DIR"), "hbase-site.xml"));
+    config.addResource(new Path(System.getenv("HADOOP_CONF_DIR"), "core-site.xml"));
     createSchemaTables(config);
     modifySchema(config);
   }
