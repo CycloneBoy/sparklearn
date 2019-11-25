@@ -2,6 +2,7 @@ package com.cycloneboy.bigdata.businessanalysis.data.kafka
 
 import java.util.UUID
 
+import com.cycloneboy.bigdata.businessanalysis.commons.common.Constants
 import com.cycloneboy.bigdata.businessanalysis.commons.model.{ProductInfo, UserInfo, UserVisitAction}
 import com.cycloneboy.bigdata.businessanalysis.commons.utils.{DateUtils, StringUtils}
 import org.apache.spark.sql.{DataFrame, SparkSession}
@@ -15,14 +16,6 @@ import scala.util.Random
  */
 object MockDataOfBusinessOffline {
 
-  val MOCK_NUMBER_OF_USER = 100
-  val MOCK_NUMBER_OF_CITY = 100
-  val MOCK_NUMBER_OF_PRODUCT = 100
-  val MOCK_NUMBER_OF_CATEGORY = 50
-
-  val USER_VISIT_ACTION_TABLE = "user_visit_action"
-  val USER_INFO_TABLE = "user_info"
-  val PRODUCT_INFO_TABLE = "product_info"
 
   /**
    * 将DataFrame插入到Hive表中
@@ -53,7 +46,7 @@ object MockDataOfBusinessOffline {
     val rows = ArrayBuffer[UserVisitAction]()
 
     // 生成100个用户
-    for (i <- 0 to MOCK_NUMBER_OF_USER) {
+    for (i <- 0 to Constants.MOCK_NUMBER_OF_USER) {
       val userId = random.nextInt(100)
       // 每个用户生成10个session
       for (j <- 0 to 10) {
@@ -74,18 +67,18 @@ object MockDataOfBusinessOffline {
           var orderProductIds: String = null
           var payCategoryIds: String = null
           var payProductIds: String = null
-          val cityId = random.nextInt(MOCK_NUMBER_OF_CITY).toLong
+          val cityId = random.nextInt(Constants.MOCK_NUMBER_OF_CITY).toLong
           // 随机确定用户在当前session中的行为
           val action = actions(random.nextInt(4))
 
           action match {
             case "search" => searchKeyword = searchKeywords(random.nextInt(searchKeywords.length))
-            case "click" => clickCategoryId = random.nextInt(MOCK_NUMBER_OF_CATEGORY).toLong
-              clickProductId = random.nextInt(MOCK_NUMBER_OF_PRODUCT).toLong
-            case "order" => orderCategoryIds = random.nextInt(MOCK_NUMBER_OF_CATEGORY).toString
-              orderProductIds = random.nextInt(MOCK_NUMBER_OF_PRODUCT).toString
-            case "pay" => payCategoryIds = random.nextInt(MOCK_NUMBER_OF_CATEGORY).toString
-              payProductIds = random.nextInt(MOCK_NUMBER_OF_PRODUCT).toString
+            case "click" => clickCategoryId = random.nextInt(Constants.MOCK_NUMBER_OF_CATEGORY).toLong
+              clickProductId = random.nextInt(Constants.MOCK_NUMBER_OF_PRODUCT).toLong
+            case "order" => orderCategoryIds = random.nextInt(Constants.MOCK_NUMBER_OF_CATEGORY).toString
+              orderProductIds = random.nextInt(Constants.MOCK_NUMBER_OF_PRODUCT).toString
+            case "pay" => payCategoryIds = random.nextInt(Constants.MOCK_NUMBER_OF_CATEGORY).toString
+              payProductIds = random.nextInt(Constants.MOCK_NUMBER_OF_PRODUCT).toString
           }
 
           rows += UserVisitAction(date, userId, sessionId,
@@ -110,13 +103,13 @@ object MockDataOfBusinessOffline {
     val sexes = Array("male", "female")
     val random = new Random()
 
-    for (i <- 0 to MOCK_NUMBER_OF_USER) {
+    for (i <- 0 to Constants.MOCK_NUMBER_OF_USER) {
       val userId = i
       val username = "user" + i
       val name = "name" + i
       val age = random.nextInt(60) + 10
       val professional = "professional" + random.nextInt(100)
-      val city = "city" + random.nextInt(MOCK_NUMBER_OF_CITY)
+      val city = "city" + random.nextInt(Constants.MOCK_NUMBER_OF_CITY)
       val sex = sexes(random.nextInt(2))
       rows += UserInfo(userId, username, name, age,
         professional, city, sex)
@@ -137,7 +130,7 @@ object MockDataOfBusinessOffline {
     val productStatus = Array(0, 1)
 
     // 随机产生100个产品信息
-    for (i <- 0 to MOCK_NUMBER_OF_PRODUCT) {
+    for (i <- 0 to Constants.MOCK_NUMBER_OF_PRODUCT) {
       val productId = i
       val productName = "product" + i
       val extendInfo = "{\"product_status\": " + productStatus(random.nextInt(2)) + "}"
@@ -173,16 +166,17 @@ object MockDataOfBusinessOffline {
     val productInfoRdd = sparkSession.sparkContext.makeRDD(productInfoData)
 
     import sparkSession.implicits._
+    // 将用户访问数据装换为DF保存到Hive表中
     val userVisitActionDF = userVisitActionRdd.toDF()
-    //    insertHive(sparkSession, USER_VISIT_ACTION_TABLE, userVisitActionDF)
+    insertHive(sparkSession, Constants.USER_VISIT_ACTION_TABLE, userVisitActionDF)
 
     // 将用户信息数据转换为DF保存到Hive表中
     val userInfoDF = userInfoRdd.toDF()
-    insertHive(sparkSession, USER_INFO_TABLE, userInfoDF)
+    insertHive(sparkSession, Constants.USER_INFO_TABLE, userInfoDF)
 
     // 将产品信息数据转换为DF保存到Hive表中
     val productInfoDF = productInfoRdd.toDF()
-    insertHive(sparkSession, PRODUCT_INFO_TABLE, productInfoDF)
+    insertHive(sparkSession, Constants.PRODUCT_INFO_TABLE, productInfoDF)
 
 
     sparkSession.close()
