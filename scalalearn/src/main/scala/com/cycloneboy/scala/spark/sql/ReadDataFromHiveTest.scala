@@ -27,7 +27,7 @@ object ReadDataFromHiveTest {
     spark.sql("use default").show()
     spark.sql("select * from student").show()
 
-    spark.sql("create table if not exists student3\nas select id, name from student")
+    spark.sql("create table if not exists student4 as select id, name from student")
 
 
     spark.stop()

@@ -11,9 +11,15 @@ import org.junit.Test
 class CommonTest {
 
 
-  @Test def TestGetConfig() = {
+  @Test def testGetConfig() = {
     val jdbcUrl = ConfigurationManager.config.getString(Constants.CONF_JDBC_URL)
     println(jdbcUrl)
     assertEquals(jdbcUrl, "jdbc:mysql://localhost:3306/business?useUnicode=true&characterEncoding=utf8")
+  }
+
+  @Test def testGetArray() = {
+    val searchKeywords = ConfigurationManager.config.getString(Constants.MOCK_DATA_USER_VISIT_ACTION_SEARCH_KEYWORDS).split(",")
+
+    searchKeywords foreach println
   }
 }

@@ -18,5 +18,8 @@ object Constants {
 
   val KAFKA_TOPICS = "kafka.topics"
 
-
+  /**
+   * 模拟数据生成
+   */
+  val MOCK_DATA_USER_VISIT_ACTION_SEARCH_KEYWORDS = "mock.userVisitAction.searchKeywords"
 }

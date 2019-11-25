@@ -18,6 +18,7 @@
 
   <modules>
     <module>business-commons</module>
+    <module>business-data</module>
   </modules>
 
   <!-- 声明子项目公用的配置属性 -->
