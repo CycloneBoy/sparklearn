@@ -1,8 +1,11 @@
 package com.cycloneboy.scala.spark.kafka
 
+import java.time.Duration
 import java.util.{Collections, Properties}
 
-import org.apache.kafka.clients.consumer.KafkaConsumer
+import org.apache.kafka.clients.consumer.{ConsumerConfig, KafkaConsumer}
+import org.apache.kafka.common.serialization.StringDeserializer
+
 
 /**
  *
@@ -10,22 +13,49 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
  */
 object ScalaComsumerExample {
 
+
+  def createKafkaConsumer(broker: String, group: String): KafkaConsumer[String, String] = {
+
+    // 创建配置对象
+    val props = new Properties()
+    // 添加配置
+    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, broker)
+    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, classOf[StringDeserializer])
+    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, classOf[StringDeserializer])
+    props.put(ConsumerConfig.GROUP_ID_CONFIG, group)
+    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest")
+    props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false: java.lang.Boolean)
+    // 根据配置创建Kafka消费者
+    new KafkaConsumer[String, String](props)
+  }
+
   def main(args: Array[String]): Unit = {
     val topic = "spark"
-    val brokers = "localhost:9092"
+    val broker = "localhost:9092"
 
-    val props = new Properties()
-    props.put("bootstrap", brokers)
-    props.put("client.id", "ScalaProducerExample")
-    props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
-    props.put("value.serializer", "org.apache.kafka.common.serialization.StringDeserializer")
+    // 创建Kafka消费者
+    var consumer = createKafkaConsumer(broker, "group-1")
 
-    val consumer = new KafkaConsumer[String, String](props)
-    consumer.subscribe(Collections.singleton(topic))
-    val records = consumer.poll(1000)
-    //    for (record <- records) {
-    //      println(record)
-    //    }
-    consumer.close()
+    consumer subscribe Collections.singleton(topic)
+
+    var result = consumer.poll(Duration.ofSeconds(60))
+
+    result.forEach(event => {
+      println(s"header:" + event.headers())
+      println(s"key: " + event.key())
+      println(s"value: " + event.value())
+      println(s"offset: " + event.offset())
+      println(s"partition: " + event.partition())
+      println(s"timestamp: " + event.timestamp())
+      println(s"topic: " + event.topic())
+    })
+
+
+
+
+    //    val records = kafkaConsumer.poll(Seconds(10))
+    //
+    //
+    //    kafkaConsumer.close()
   }
 }

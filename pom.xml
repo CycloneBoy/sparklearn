@@ -16,6 +16,7 @@
     <module>zookeeper</module>
     <module>hivelearn</module>
     <module>flumelearn</module>
+    <module>business-analysis</module>
   </modules>
 
 
@@ -38,6 +39,10 @@
     <flume.version>1.9.0</flume.version>
     <hbase.version>2.2.2</hbase.version>
 
+    <apache.common.pool2.version>2.6.2</apache.common.pool2.version>
+    <fastjson.version>1.2.49</fastjson.version>
+    <joda.time.version>2.10.5</joda.time.version>
+    <commons-lang3.version>3.9</commons-lang3.version>
   </properties>
 
   <dependencies>
@@ -122,6 +127,30 @@
         <groupId>org.apache.hbase</groupId>
         <artifactId>hbase-client</artifactId>
         <version>${hbase.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-pool2</artifactId>
+        <version>${apache.common.pool2.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>fastjson</artifactId>
+        <version>${fastjson.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+        <version>${joda.time.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${commons-lang3.version}</version>
       </dependency>
 
 

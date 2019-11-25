@@ -21,6 +21,7 @@
     <akka.version>2.5.10</akka.version>
     <spark.kafka.version>1.6.3</spark.kafka.version>
     <kafka.client.version>2.3.0</kafka.client.version>
+    <spark.streaming.flume.version>2.2.2</spark.streaming.flume.version>
 
     <mysql.version>8.0.16</mysql.version>
     <junit.version>4.12</junit.version>
@@ -76,13 +77,27 @@
       <version>${spark.kafka.version}</version>
     </dependency>
 
+
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming-flume_2.11</artifactId>
+      <version>${spark.streaming.flume.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming-flume-sink_2.11</artifactId>
+      <version>${spark.streaming.flume.version}</version>
+    </dependency>
+
+
     <!-- kafka -->
 
-<!--    <dependency>-->
-<!--      <groupId>org.apache.kafka</groupId>-->
-<!--      <artifactId>kafka_${scala.version}</artifactId>-->
-<!--      <version>${kafka.client.version}</version>-->
-<!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.apache.kafka</groupId>-->
+    <!--      <artifactId>kafka_${scala.version}</artifactId>-->
+    <!--      <version>${kafka.client.version}</version>-->
+    <!--    </dependency>-->
 
     <dependency>
       <groupId>org.apache.kafka</groupId>
@@ -174,6 +189,10 @@
       <version>${scalafx.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-pool2</artifactId>
+    </dependency>
 
   </dependencies>
 
