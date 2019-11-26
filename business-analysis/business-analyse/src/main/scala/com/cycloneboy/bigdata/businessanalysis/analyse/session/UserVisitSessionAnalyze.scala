@@ -1,0 +1,436 @@
+package com.cycloneboy.bigdata.businessanalysis.analyse.session
+
+import java.util.{Date, UUID}
+
+import com.cycloneboy.bigdata.businessanalysis.analyse.model.{SessionAggrInfo, SessionAggrStat}
+import com.cycloneboy.bigdata.businessanalysis.commons.common.Constants
+import com.cycloneboy.bigdata.businessanalysis.commons.conf.ConfigurationManager
+import com.cycloneboy.bigdata.businessanalysis.commons.model.{UserInfo, UserVisitAction}
+import com.cycloneboy.bigdata.businessanalysis.commons.utils._
+import net.sf.json.JSONObject
+import org.apache.spark.SparkConf
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.{SaveMode, SparkSession}
+import org.apache.spark.util.AccumulatorV2
+
+import scala.collection.mutable
+
+
+/**
+ *
+ * Create by  sl on 2019-11-26 12:17
+ *
+ * 接收用户创建的分析任务，用户可能指定的条件如下：
+ *
+ * 1、时间范围：起始日期~结束日期
+ * 2、性别：男或女
+ * 3、年龄范围
+ * 4、职业：多选
+ * 5、城市：多选
+ * 6、搜索词：多个搜索词，只要某个session中的任何一个action搜索过指定的关键词，那么session就符合条件
+ * 7、点击品类：多个品类，只要某个session中的任何一个action点击过某个品类，那么session就符合条件
+ *
+ */
+
+object UserVisitSessionAnalyze {
+
+  //  val log = LoggerFactory.getLogger(UserVisitSessionAnalyze.getClass.toString)
+
+
+  def main(args: Array[String]): Unit = {
+    // 获取统计任务参数【为了方便，直接从配置文件中获取，企业中会从一个调度平台获取】
+    val jsonStr = ConfigurationManager.config.getString(Constants.TASK_PARAMS)
+    val taskParam = JSONObject.fromObject(jsonStr)
+
+
+    val taskUUID = DateUtils.getTodayStandard() + "_" + UUID.randomUUID().toString.replace("-", "")
+
+    val sparkConf = new SparkConf().setAppName("UserVisitSessionAnalyze").setMaster("local[*]")
+
+    val spark = SparkSession.builder().config(sparkConf).enableHiveSupport().getOrCreate()
+    spark.sparkContext.setLogLevel("error")
+    val sc = spark.sparkContext
+
+    val actionRdd = getActionRDDByDateRange(spark, taskParam)
+
+    // 打印测试数据是否读入正确
+    println("-----------------打印测试数据是否读入正确-----------------------")
+    actionRdd.take(5) foreach println
+
+    // 将用户行为信息转换成 KV结构
+    val sessionid2actionRDD: RDD[(String, UserVisitAction)] = actionRdd.map(action => (action.session_id, action))
+
+    // 数据缓存
+    sessionid2actionRDD.cache()
+
+    // 将数据转换为Session粒度， 格式为<sessionid,(sessionid,searchKeywords,clickCategoryIds,age,professional,city,sex)>
+    val session2AggrInfoRDD: RDD[(String, SessionAggrInfo)] = aggregateBySession(spark, sessionid2actionRDD)
+
+    // 打印session2AggrInfoRDD是否转换正确
+    println("-----------------打印session2AggrInfoRDD是否转换正确-----------------------")
+    session2AggrInfoRDD.take(5) foreach println
+
+    // 设置自定义累加器，实现所有数据的统计功能,注意累加器也是懒执行的
+    val sessionAggrStatAccumulator = new SessionAggrStatAccumulator
+
+    sc.register(sessionAggrStatAccumulator, "sessionAggrStatAccumulator")
+
+    // 根据查询任务的配置，过滤用户的行为数据，同时在过滤的过程中，对累加器中的数据进行统计
+    // filteredSessionid2AggrInfoRDD是按照年龄、职业、城市范围、性别、搜索词、点击品类这些条件过滤后的最终结果
+
+    val filteredSessionid2AggrInfoRDD: RDD[(String, SessionAggrInfo)] = filterSessionAndAggrStat(taskParam, session2AggrInfoRDD, sessionAggrStatAccumulator)
+    println("--------------------------------根据查询任务的配置，过滤用户的行为数据，同时在过滤的过程中，对累加器中的数据进行统计----------------------------------------------")
+    //    filteredSessionid2AggrInfoRDD.take(5) foreach println
+
+    filteredSessionid2AggrInfoRDD.cache()
+
+    // 打印filteredSessionid2AggrInfoRDD是否转换正确
+    println("-----------------打印filteredSessionid2AggrInfoRDD是否转换正确-----------------------")
+    println("经过过滤关键词的数据")
+    filteredSessionid2AggrInfoRDD.take(5) foreach println
+
+    // sessionid2detailRDD，就是代表了通过筛选的session对应的访问明细数据
+    // sessionid2detailRDD是原始完整数据与（用户 + 行为数据）聚合的结果，是符合过滤条件的完整数据
+    // sessionid2detailRDD ( sessionId, userAction )
+
+    val sessionid2detailRDD: RDD[(String, (SessionAggrInfo, UserVisitAction))] = getSessionid2detailRDD(sessionid2actionRDD, filteredSessionid2AggrInfoRDD)
+
+    sessionid2detailRDD.cache()
+    println("-----------------打印代表了通过筛选的session对应的访问明细数据-----------------------")
+    sessionid2detailRDD.take(5) foreach println
+
+    // 业务功能一：统计各个范围的session占比，并写入MySQL
+    calculateAndPersistAggrStat(spark, sessionAggrStatAccumulator.value, taskUUID)
+    println("--------------------------------业务功能一：统计各个范围的session占比，并写入MySQL--------------------------------")
+
+  }
+
+  /**
+   * 计算各session范围占比，并写入MySQL
+   *
+   * @param spark
+   * @param value
+   * @param taskUUID
+   */
+  private def calculateAndPersistAggrStat(spark: SparkSession, value: mutable.HashMap[String, Int], taskUUID: String) = {
+
+    value.foreach {
+      case (k, v) => println(s"$k -> " + v)
+    }
+
+
+    val session_count = value(Constants.SESSION_COUNT).toDouble
+
+    val visit_length_1s_3s = value.getOrElse(Constants.TIME_PERIOD_1s_3s, 0)
+    val visit_length_4s_6s = value.getOrElse(Constants.TIME_PERIOD_4s_6s, 0)
+    val visit_length_7s_9s = value.getOrElse(Constants.TIME_PERIOD_7s_9s, 0)
+    val visit_length_10s_30s = value.getOrElse(Constants.TIME_PERIOD_10s_30s, 0)
+    val visit_length_30s_60s = value.getOrElse(Constants.TIME_PERIOD_30s_60s, 0)
+    val visit_length_1m_3m = value.getOrElse(Constants.TIME_PERIOD_1m_3m, 0)
+    val visit_length_3m_10m = value.getOrElse(Constants.TIME_PERIOD_3m_10m, 0)
+    val visit_length_10m_30m = value.getOrElse(Constants.TIME_PERIOD_10m_30m, 0)
+    val visit_length_30m = value.getOrElse(Constants.TIME_PERIOD_30m, 0)
+
+    val step_length_1_3 = value.getOrElse(Constants.STEP_PERIOD_1_3, 0)
+    val step_length_4_6 = value.getOrElse(Constants.STEP_PERIOD_4_6, 0)
+    val step_length_7_9 = value.getOrElse(Constants.STEP_PERIOD_7_9, 0)
+    val step_length_10_30 = value.getOrElse(Constants.STEP_PERIOD_10_30, 0)
+    val step_length_30_60 = value.getOrElse(Constants.STEP_PERIOD_30_60, 0)
+    val step_length_60 = value.getOrElse(Constants.STEP_PERIOD_60, 0)
+
+    // 计算各个访问时长和访问步长的范围
+    val visit_length_1s_3s_ratio = NumberUtils.formatDouble(visit_length_1s_3s / session_count, 2)
+    val visit_length_4s_6s_ratio = NumberUtils.formatDouble(visit_length_4s_6s / session_count, 2)
+    val visit_length_7s_9s_ratio = NumberUtils.formatDouble(visit_length_7s_9s / session_count, 2)
+    val visit_length_10s_30s_ratio = NumberUtils.formatDouble(visit_length_10s_30s / session_count, 2)
+    val visit_length_30s_60s_ratio = NumberUtils.formatDouble(visit_length_30s_60s / session_count, 2)
+    val visit_length_1m_3m_ratio = NumberUtils.formatDouble(visit_length_1m_3m / session_count, 2)
+    val visit_length_3m_10m_ratio = NumberUtils.formatDouble(visit_length_3m_10m / session_count, 2)
+    val visit_length_10m_30m_ratio = NumberUtils.formatDouble(visit_length_10m_30m / session_count, 2)
+    val visit_length_30m_ratio = NumberUtils.formatDouble(visit_length_30m / session_count, 2)
+
+    val step_length_1_3_ratio = NumberUtils.formatDouble(step_length_1_3 / session_count, 2)
+    val step_length_4_6_ratio = NumberUtils.formatDouble(step_length_4_6 / session_count, 2)
+    val step_length_7_9_ratio = NumberUtils.formatDouble(step_length_7_9 / session_count, 2)
+    val step_length_10_30_ratio = NumberUtils.formatDouble(step_length_10_30 / session_count, 2)
+    val step_length_30_60_ratio = NumberUtils.formatDouble(step_length_30_60 / session_count, 2)
+    val step_length_60_ratio = NumberUtils.formatDouble(step_length_60 / session_count, 2)
+
+    // 将统计结果封装为Domain对象
+    val sessionAggrStat = SessionAggrStat(taskUUID,
+      session_count.toInt, visit_length_1s_3s_ratio, visit_length_4s_6s_ratio, visit_length_7s_9s_ratio,
+      visit_length_10s_30s_ratio, visit_length_30s_60s_ratio, visit_length_1m_3m_ratio,
+      visit_length_3m_10m_ratio, visit_length_10m_30m_ratio, visit_length_30m_ratio,
+      step_length_1_3_ratio, step_length_4_6_ratio, step_length_7_9_ratio,
+      step_length_10_30_ratio, step_length_30_60_ratio, step_length_60_ratio)
+
+    import spark.implicits._
+    val sessionAggrStatRDD: RDD[SessionAggrStat] = spark.sparkContext.makeRDD(Array(sessionAggrStat))
+    sessionAggrStatRDD.toDF().write
+      .format("jdbc")
+      .option("url", ConfigurationManager.config.getString(Constants.CONF_JDBC_URL))
+      .option("dbtable", "session_aggr_stat")
+      .option("user", ConfigurationManager.config.getString(Constants.CONF_JDBC_USER))
+      .option("password", ConfigurationManager.config.getString(Constants.CONF_JDBC_PASSWORD))
+      .mode(SaveMode.Append)
+      .save()
+
+
+  }
+
+  /**
+   * 获取通过筛选条件的session的访问明细数据RDD
+   *
+   * @param sessionid2actionRDD
+   * @param filteredSessionid2AggrInfoRDD
+   * @return
+   */
+  private def getSessionid2detailRDD(sessionid2actionRDD: RDD[(String, UserVisitAction)], filteredSessionid2AggrInfoRDD: RDD[(String, SessionAggrInfo)]): RDD[(String, (SessionAggrInfo, UserVisitAction))] = {
+    filteredSessionid2AggrInfoRDD.join(sessionid2actionRDD)
+  }
+
+  /**
+   * 业务需求一：过滤session数据，并进行聚合统计
+   *
+   * @param taskParam
+   * @param session2AggrInfoRDD
+   * @param sessionAggrStatAccumulator
+   * @return
+   */
+  private def filterSessionAndAggrStat(taskParam: JSONObject,
+                                       session2AggrInfoRDD: RDD[(String, SessionAggrInfo)],
+                                       sessionAggrStatAccumulator: AccumulatorV2[String, mutable.HashMap[String, Int]]): RDD[(String, SessionAggrInfo)] = {
+    // 获取查询任务中的配置
+    val startAge = ParamUtils.getParam(taskParam, Constants.PARAM_START_AGE)
+    val endAge = ParamUtils.getParam(taskParam, Constants.PARAM_END_AGE)
+    val professionals = ParamUtils.getParam(taskParam, Constants.PARAM_PROFESSIONALS)
+    val cities = ParamUtils.getParam(taskParam, Constants.PARAM_CITIES)
+    val sex = ParamUtils.getParam(taskParam, Constants.PARAM_SEX)
+    val keywords = ParamUtils.getParam(taskParam, Constants.PARAM_KEYWORDS)
+    val categoryIds = ParamUtils.getParam(taskParam, Constants.PARAM_CATEGORY_IDS)
+
+    val filterSessionid2AggrInfoRDD = session2AggrInfoRDD.filter {
+      case (sessionid, aggrInfo) =>
+        // 接着，依次按照筛选条件进行过滤
+        // 按照年龄范围进行过滤（startAge、endAge）
+        var success = true
+        if ((StringUtils.isNotEmpty(startAge) && StringUtils.isNotEmpty(endAge)) && (aggrInfo.age < startAge.toInt || aggrInfo.age > endAge.toInt)) {
+          success = false
+        }
+
+        // 按照职业范围进行过滤（professionals）
+        // 互联网,IT,软件
+        // 互联网
+        if (!ValidUtils.in(professionals, aggrInfo.professional)) {
+          success = false
+        }
+
+        // 按照城市范围进行过滤（cities）
+        // 北京,上海,广州,深圳
+        // 成都
+        if (!ValidUtils.in(cities, aggrInfo.city)) {
+          success = false
+        }
+
+        // 按照性别进行过滤
+        // 男/女
+        // 男，女
+        if (!ValidUtils.in(sex, aggrInfo.sex)) {
+          success = false
+        }
+
+        // 按照搜索词进行过滤
+        // 我们的session可能搜索了 火锅,蛋糕,烧烤
+        // 我们的筛选条件可能是 火锅,串串香,iphone手机
+        // 那么，in这个校验方法，主要判定session搜索的词中，有任何一个，与筛选条件中
+        // 任何一个搜索词相当，即通过
+        if (!ValidUtils.in(keywords, aggrInfo.searchKeywords)) {
+          success = false
+        }
+
+        // 按照点击品类id进行过滤
+        if (!ValidUtils.in(categoryIds, aggrInfo.clickCategoryIds)) {
+          success = false
+        }
+
+        if (success) {
+
+
+          sessionAggrStatAccumulator.add(Constants.SESSION_COUNT)
+          //          log.debug("sessionAggrStatAccumulator.add(Constants.SESSION_COUNT)")
+          //          println("sessionAggrStatAccumulator.add(Constants.SESSION_COUNT)")
+
+          // 计算访问时长范围
+          def calculateVisitLength(visitLength: Long) {
+            if (visitLength >= 1 && visitLength <= 3) {
+              sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_1s_3s)
+            } else if (visitLength >= 4 && visitLength <= 6) {
+              sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_4s_6s)
+            } else if (visitLength >= 7 && visitLength <= 9) {
+              sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_7s_9s)
+            } else if (visitLength >= 10 && visitLength <= 30) {
+              sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_10s_30s)
+            } else if (visitLength > 30 && visitLength <= 60) {
+              sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_30s_60s)
+            } else if (visitLength > 60 && visitLength <= 180) {
+              sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_1m_3m)
+            } else if (visitLength > 180 && visitLength <= 600) {
+              sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_3m_10m)
+            } else if (visitLength > 600 && visitLength <= 1800) {
+              sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_10m_30m)
+            } else if (visitLength > 1800) {
+              sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_30m)
+            }
+          }
+
+          // 计算访问步长范围
+          def calculateStepLength(stepLength: Long) {
+            if (stepLength >= 1 && stepLength <= 3) {
+              sessionAggrStatAccumulator.add(Constants.STEP_PERIOD_1_3)
+            } else if (stepLength >= 4 && stepLength <= 6) {
+              sessionAggrStatAccumulator.add(Constants.STEP_PERIOD_4_6)
+            } else if (stepLength >= 7 && stepLength <= 9) {
+              sessionAggrStatAccumulator.add(Constants.STEP_PERIOD_7_9)
+            } else if (stepLength >= 10 && stepLength <= 30) {
+              sessionAggrStatAccumulator.add(Constants.STEP_PERIOD_10_30)
+            } else if (stepLength > 30 && stepLength <= 60) {
+              sessionAggrStatAccumulator.add(Constants.STEP_PERIOD_30_60)
+            } else if (stepLength > 60) {
+              sessionAggrStatAccumulator.add(Constants.STEP_PERIOD_60)
+            }
+          }
+
+          // 计算出session的访问时长和访问步长的范围，并进行相应的累加
+          calculateVisitLength(aggrInfo.visitLength)
+          calculateStepLength(aggrInfo.stepLength)
+        }
+        success
+    }
+
+    filterSessionid2AggrInfoRDD
+
+  }
+
+  /**
+   * 对Session数据进行聚合
+   * 聚合每个userid 的访问信息统计
+   *
+   * @param spark
+   * @param sessionid2actionRDD
+   * @return
+   */
+  def aggregateBySession(spark: SparkSession, sessionid2actionRDD: RDD[(String, UserVisitAction)]): RDD[(String, SessionAggrInfo)] = {
+    // 将数据转换为Session粒度， 格式为<sessionid,(sessionid,searchKeywords,clickCategoryIds,age,professional,city,sex)>
+    val sessionid2ActionRDD: RDD[(String, Iterable[UserVisitAction])] = sessionid2actionRDD.groupByKey()
+
+    // 对每一个session分组进行聚合，将session中所有的搜索词和点击品类都聚合起来，<userid,partAggrInfo(sessionid,searchKeywords,clickCategoryIds)>
+    val userid2PartAggrInfoRDD = sessionid2ActionRDD.map { case (sessionid, userVisitActions) =>
+
+      var searchKeywordsBuffer: StringBuffer = new StringBuffer("")
+      var clickCategoryBuffer: StringBuffer = new StringBuffer("")
+
+      var userid = -1L
+
+      // session的起始和结束时间
+      var startTime: Date = null
+      var endTime: Date = null
+
+      // session的访问步长
+      var stepLength = 0
+
+      // 遍历session所有的访问行为
+      userVisitActions.foreach { userVisitAction =>
+        if (userid == -1L) {
+          userid = userVisitAction.user_id
+        }
+
+        val searchKeyword = userVisitAction.search_keyword
+        val clickCategoryId = userVisitAction.click_category_id
+
+        // 实际上这里要对数据说明一下
+        // 并不是每一行访问行为都有searchKeyword何clickCategoryId两个字段的
+        // 其实，只有搜索行为，是有searchKeyword字段的
+        // 只有点击品类的行为，是有clickCategoryId字段的
+        // 所以，任何一行行为数据，都不可能两个字段都有，所以数据是可能出现null值的
+
+        // 我们决定是否将搜索词或点击品类id拼接到字符串中去
+        // 首先要满足：不能是null值
+        // 其次，之前的字符串中还没有搜索词或者点击品类id
+
+        if (StringUtils.isNotEmpty(searchKeyword)) {
+          if (!searchKeywordsBuffer.toString.contains(searchKeyword)) {
+            searchKeywordsBuffer.append(searchKeyword + ",")
+          }
+        }
+
+        if (clickCategoryId != null && clickCategoryId != -1L) {
+          if (!clickCategoryBuffer.toString.contains(clickCategoryId.toString)) {
+            clickCategoryBuffer.append(clickCategoryId + ",")
+          }
+        }
+
+        // 计算session开始和结束时间
+        val actionTime: Date = DateUtils.parseTime(userVisitAction.action_time)
+
+        if (startTime == null || actionTime.before(startTime)) {
+          startTime = actionTime
+        }
+
+        if (endTime == null || actionTime.after(endTime)) {
+          endTime = actionTime
+        }
+
+        // 计算session访问步长
+        stepLength += 1
+      }
+
+      val searchKeywords = StringUtils.trimComma(searchKeywordsBuffer.toString)
+      val clickCategoryIds = StringUtils.trimComma(clickCategoryBuffer.toString)
+
+      // 计算session 访问时长(秒)
+      val visitLength = (endTime.getTime - startTime.getTime) / 1000
+
+      // 聚合数据
+      val partAggrInfo = SessionAggrInfo(sessionid, searchKeywords, clickCategoryIds, visitLength, stepLength, DateUtils.formatTime(startTime), userid, -1, "", "", "")
+
+      (userid.toString, partAggrInfo)
+    }
+
+    // 和用户数据进行join
+    // 查询所有用户数据，并映射成<userid,Row>的格式
+    import spark.implicits._
+    val userid2InfoRDD: RDD[(String, UserInfo)] = spark.sql("select * from user_info").as[UserInfo].rdd.map(item => (item.user_id.toString, item))
+
+    // 将session粒度聚合数据，与用户信息进行join
+    val userid2FullInfoRDD: RDD[(String, (SessionAggrInfo, UserInfo))] = userid2PartAggrInfoRDD.join(userid2InfoRDD)
+
+    // 对join起来的数据进行拼接，并且返回<sessionid,fullAggrInfo>格式的数据
+    userid2FullInfoRDD.map { case (userid, (partAggrInfo, userInfo)) =>
+      val sessionid = partAggrInfo.sessionid
+
+      // 聚合数据
+      val fullAggrInfo = SessionAggrInfo(partAggrInfo.sessionid,
+        partAggrInfo.searchKeywords, partAggrInfo.clickCategoryIds, partAggrInfo.visitLength, partAggrInfo.stepLength, partAggrInfo.startTime,
+        userid.toLong, userInfo.age, userInfo.professional, userInfo.city, userInfo.sex)
+
+      (sessionid, fullAggrInfo)
+    }
+  }
+
+  /**
+   * 根据日期获取对象的用户行为数据
+   *
+   * @param spark
+   * @param taskParam
+   * @return
+   */
+  def getActionRDDByDateRange(spark: SparkSession, taskParam: JSONObject): RDD[UserVisitAction] = {
+    val startDate = ParamUtils.getParam(taskParam, Constants.PARAM_START_DATE)
+    val endDate = ParamUtils.getParam(taskParam, Constants.PARAM_END_DATE)
+
+    import spark.implicits._
+    spark.sql("select * from user_visit_action where date >='" + startDate + "' and date<='" + endDate + "'")
+      .as[UserVisitAction].rdd
+
+  }
+}

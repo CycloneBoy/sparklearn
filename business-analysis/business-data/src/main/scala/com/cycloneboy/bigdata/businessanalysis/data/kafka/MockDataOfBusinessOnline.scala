@@ -14,6 +14,9 @@ import scala.util.Random
  * Create by  sl on 2019-11-25 22:22
  *
  * 利用kafka生成模拟实时数据,广告点击数据
+ *
+ * 查看生产的数据consumer消费:
+ * kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic AdRealTimeLog --from-beginning
  */
 object MockDataOfBusinessOnline {
 

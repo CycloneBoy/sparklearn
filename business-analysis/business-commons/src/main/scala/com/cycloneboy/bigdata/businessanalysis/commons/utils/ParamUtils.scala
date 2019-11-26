@@ -1,6 +1,7 @@
 package com.cycloneboy.bigdata.businessanalysis.commons.utils
 
-import com.alibaba.fastjson.JSONObject
+import net.sf.json.JSONObject
+
 
 /**
  *

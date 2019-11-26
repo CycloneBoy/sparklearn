@@ -11,10 +11,14 @@ import org.joda.time.format.DateTimeFormat
  */
 object DateUtils {
 
+  val TIME = "yyyy-MM-dd HH:mm:ss"
+  val FORMAT_DATE_TIME_SECOND = "yyyyMMddHHmmss"
+
   val TIME_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
   val DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd")
   val DATEKEY_FORMAT = DateTimeFormat.forPattern("yyyyMMdd")
   val DATE_TIME_FORMAT = DateTimeFormat.forPattern("yyyyMMddHHmm")
+  val DATE_TIME_SECOND_FORMAT = DateTimeFormat.forPattern("yyyyMMddHHmmss")
 
   /**
    * 判断一个时间是否在另一个时间之前
@@ -144,5 +148,26 @@ object DateUtils {
    */
   def formatTimeMinute(date: Date): String = {
     new DateTime(date).toString(DATE_TIME_FORMAT)
+  }
+
+  /**
+   * 格式化时间，自定义时间格式
+   *
+   * @param date   日期
+   * @param format 时间格式
+   * @return
+   */
+  def formatDateTime(date: Date, format: String): String = {
+    val formatter = DateTimeFormat.forPattern(format)
+    new DateTime(date).toString(formatter)
+  }
+
+  /**
+   * 获取当前时间格式: yyyyMMddHHmmss
+   *
+   * @return
+   */
+  def getTodayStandard() = {
+    formatDateTime(new Date(), FORMAT_DATE_TIME_SECOND)
   }
 }

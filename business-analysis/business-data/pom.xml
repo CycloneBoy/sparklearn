@@ -14,6 +14,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>business-data</name>
   <description>data for businessanalysis</description>
+
   <properties>
     <jackson.version>2.9.0</jackson.version>
   </properties>
@@ -127,7 +128,6 @@
 
     <sourceDirectory>src/main/scala</sourceDirectory>
     <testSourceDirectory>src/test/scala</testSourceDirectory>
-
 
     <plugins>
       <plugin>

@@ -92,4 +92,24 @@ object ValidUtils {
     }
     false
   }
+
+  /**
+   * 校验数据中的指定字段，是否有值与参数字段的值相同
+   *
+   * @param source 数据
+   * @param target 数据字段
+   * @return 校验结果
+   */
+  def in(source: String, target: String, comma: String = ","): Boolean = {
+
+    if (StringUtils.isNotEmpty(source) && StringUtils.isNotEmpty(target)) {
+      val sourceSet = source.split(comma).toSet
+      val targetSet = target.split(comma).toSet
+
+      val resultSet: Set[String] = sourceSet & targetSet
+      resultSet.nonEmpty
+    } else {
+      true
+    }
+  }
 }
