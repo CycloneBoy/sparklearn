@@ -78,6 +78,11 @@ object Constants {
   val PARAM_TARGET_PAGE_FLOW = "targetPageFlow"
 
   /**
+   * 任务二: 需要随机抽取session的数量
+   */
+  val PARAM_EXTRACT_SESSION_NUMBER = "extractSessionNumber"
+
+  /**
    * *********************************************************************************
    * 临时变量
    */

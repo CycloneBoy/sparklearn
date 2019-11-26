@@ -2,18 +2,22 @@ package com.cycloneboy.bigdata.businessanalysis.analyse.session
 
 import java.util.{Date, UUID}
 
-import com.cycloneboy.bigdata.businessanalysis.analyse.model.{SessionAggrInfo, SessionAggrStat}
+import com.cycloneboy.bigdata.businessanalysis.analyse.model.{SessionAggrInfo, SessionAggrStat, SessionDetail, SessionRandomExtract}
+import com.cycloneboy.bigdata.businessanalysis.analyse.utils.DataUtils
 import com.cycloneboy.bigdata.businessanalysis.commons.common.Constants
 import com.cycloneboy.bigdata.businessanalysis.commons.conf.ConfigurationManager
 import com.cycloneboy.bigdata.businessanalysis.commons.model.{UserInfo, UserVisitAction}
 import com.cycloneboy.bigdata.businessanalysis.commons.utils._
 import net.sf.json.JSONObject
 import org.apache.spark.SparkConf
+import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{SaveMode, SparkSession}
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.util.AccumulatorV2
 
 import scala.collection.mutable
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
+import scala.util.Random
 
 
 /**
@@ -85,15 +89,14 @@ object UserVisitSessionAnalyze {
     filteredSessionid2AggrInfoRDD.cache()
 
     // 打印filteredSessionid2AggrInfoRDD是否转换正确
-    println("-----------------打印filteredSessionid2AggrInfoRDD是否转换正确-----------------------")
-    println("经过过滤关键词的数据")
+    println("-----------------打印经过过滤关键词的session数据-----------------------")
     filteredSessionid2AggrInfoRDD.take(5) foreach println
 
     // sessionid2detailRDD，就是代表了通过筛选的session对应的访问明细数据
     // sessionid2detailRDD是原始完整数据与（用户 + 行为数据）聚合的结果，是符合过滤条件的完整数据
     // sessionid2detailRDD ( sessionId, userAction )
 
-    val sessionid2detailRDD: RDD[(String, (SessionAggrInfo, UserVisitAction))] = getSessionid2detailRDD(sessionid2actionRDD, filteredSessionid2AggrInfoRDD)
+    val sessionid2detailRDD: RDD[(String, UserVisitAction)] = getSessionid2detailRDD(sessionid2actionRDD, filteredSessionid2AggrInfoRDD)
 
     sessionid2detailRDD.cache()
     println("-----------------打印代表了通过筛选的session对应的访问明细数据-----------------------")
@@ -103,7 +106,196 @@ object UserVisitSessionAnalyze {
     calculateAndPersistAggrStat(spark, sessionAggrStatAccumulator.value, taskUUID)
     println("--------------------------------业务功能一：统计各个范围的session占比，并写入MySQL--------------------------------")
 
+    // 业务功能二：随机均匀获取Session，之所以业务功能二先计算，是为了通过Action操作触发所有转换操作。
+    randomExtractSession(taskUUID, spark, filteredSessionid2AggrInfoRDD, sessionid2detailRDD, taskParam)
+    println("--------------------------------// 业务功能二：随机均匀获取Session，之所以业务功能二先计算，是为了通过Action操作触发所有转换操作。----------------------------------")
   }
+
+  /**
+   * 业务需求二：随机抽取session
+   *
+   * @param taskUUID
+   * @param spark
+   * @param sessionid2AggrInfoRDD
+   * @param sessionid2actionRDD
+   */
+  private def randomExtractSession(taskUUID: String, spark: SparkSession, sessionid2AggrInfoRDD: RDD[(String, SessionAggrInfo)], sessionid2actionRDD: RDD[(String, UserVisitAction)], taskParam: JSONObject) = {
+
+    // 第一步，计算出每天每小时的session数量，获取<yyyy-MM-dd_HH,aggrInfo>格式的RDD
+    val time2sessionidRDD: RDD[(String, SessionAggrInfo)] = sessionid2AggrInfoRDD.map { case (sessionid, aggrInfo) =>
+      val startTime = aggrInfo.startTime
+      val dateHour = DateUtils.getDateHour(startTime)
+      (dateHour, aggrInfo)
+    }
+
+    println("-----------------打印第一步，计算出每天每小时的session数量，获取<yyyy-MM-dd_HH,aggrInfo>格式的RDD-----------------------")
+    time2sessionidRDD.take(5) foreach println
+
+    // 得到每天每小时的session数量
+    // countByKey()计算每个不同的key有多少个数据
+    // countMap<yyyy-MM-dd_HH, count>
+    val countMap: collection.Map[String, Long] = time2sessionidRDD.countByKey()
+
+    // 第二步，使用按时间比例随机抽取算法，计算出每天每小时要抽取session的索引，将<yyyy-MM-dd_HH,count>格式的map，转换成<yyyy-MM-dd,<HH,count>>的格式
+    // dateHourCountMap <yyyy-MM-dd,<HH,count>>
+    val dateHourCountMap = new mutable.HashMap[String, mutable.HashMap[String, Long]]()
+    for ((dateHour, count) <- countMap) {
+      val date = dateHour.split("_")(0)
+      val hour = dateHour.split("_")(1)
+
+      // 通过模式匹配实现了if的功能
+      dateHourCountMap.get(date) match {
+        // 对应日期的数据不存在，则新增
+        case None => dateHourCountMap(date) = new mutable.HashMap[String, Long](); dateHourCountMap(date) += (hour -> count)
+        // 对应日期的数据存在，则更新
+        // 如果有值，Some(hourCountMap)将值取到了hourCountMap中
+        case Some(hourCountMap) => hourCountMap += (hour -> count)
+      }
+    }
+
+    // 按时间比例随机抽取算法，总共要抽取100个session，先按照天数，进行平分
+    // 获取每一天要抽取的数量
+    var extractNumber = ParamUtils.getParam(taskParam, Constants.PARAM_EXTRACT_SESSION_NUMBER)
+    if (StringUtils.isEmpty(extractNumber)) {
+      extractNumber = "100"
+    }
+
+    val extractNumberPerDay = extractNumber.toInt / dateHourCountMap.size
+
+    // dateHourExtractMap[天，[小时，index列表]]
+    val dateHourExtractMap = new mutable.HashMap[String, mutable.HashMap[String, ListBuffer[Int]]]()
+    val random = new Random()
+
+    /**
+     * 根据每个小时应该抽取的数量，来产生随机值
+     * 遍历每个小时，填充Map<date,<hour,(3,5,20,102)>>
+     *
+     * @param hourExtractMap
+     * @param hourCountMap
+     * @param sessionCountOfDay
+     */
+    def hourExtractMapFunc(hourExtractMap: mutable.HashMap[String, ListBuffer[Int]],
+                           hourCountMap: mutable.HashMap[String, Long],
+                           sessionCountOfDay: Long) = {
+
+      for ((hour, count) <- hourCountMap) {
+        // 计算每个小时的session数量，占据当天总session数量的比例，直接乘以每天要抽取的数量
+        // 就可以计算出，当前小时需要抽取的session数量
+        var hourExtractNumber = ((count / sessionCountOfDay.toDouble) * extractNumberPerDay).toInt
+        if (hourExtractNumber > count) {
+          hourExtractNumber = count.toInt
+        }
+
+        // 仍然通过模式匹配实现有则追加，无则新建
+        hourExtractMap.get(hour) match {
+          case None => hourExtractMap(hour) = new mutable.ListBuffer[Int]
+            // 根据数量随机生成下标
+            for (i <- 0 to hourExtractNumber) {
+              var extractIndex = random.nextInt(count.toInt)
+              // 一旦随机生成的index已经存在，重新获取，直到获取到之前没有的index
+              while (hourExtractMap(hour).contains(extractIndex)) {
+                extractIndex = random.nextInt(count.toInt)
+              }
+              hourExtractMap(hour) += extractIndex
+            }
+          case Some(extractIndexList) =>
+            // 根据数量随机生成下标
+            for (i <- 0 to hourExtractNumber) {
+              var extractIndex = random.nextInt(count.toInt)
+              // 一旦随机生成的index已经存在，重新获取，直到获取到之前没有的index
+              while (hourExtractMap(hour).contains(extractIndex)) {
+                extractIndex = random.nextInt(count.toInt)
+              }
+              hourExtractMap(hour) += extractIndex
+            }
+        }
+      }
+    }
+
+    // session 随机抽取功能
+    for ((date, hourCountMap) <- dateHourCountMap) {
+      // 计算出这一天的session总数
+      val sessionCountOfDay: Long = hourCountMap.values.sum
+
+      dateHourExtractMap.get(date) match {
+        case None => dateHourExtractMap(date) = new mutable.HashMap[String, ListBuffer[Int]]()
+          // 更新index
+          hourExtractMapFunc(dateHourExtractMap(date), hourCountMap, sessionCountOfDay)
+        case Some(hourExtractMap) => hourExtractMapFunc(hourExtractMap, hourCountMap, sessionCountOfDay)
+      }
+    }
+
+    /* 至此，index获取完毕 */
+    println("------------------session 随机抽取功能-------------------")
+    //将Map进行广播
+    val dateHourExtractMapBroadcast: Broadcast[mutable.HashMap[String, mutable.HashMap[String, ListBuffer[Int]]]] = spark.sparkContext.broadcast(dateHourExtractMap)
+
+    // time2sessionidRDD <yyyy-MM-dd_HH,aggrInfo>
+    // 执行groupByKey算子，得到<yyyy-MM-dd_HH,(session aggrInfo)>
+
+    val time2sessionsRDD: RDD[(String, Iterable[SessionAggrInfo])] = time2sessionidRDD.groupByKey()
+
+    // 第三步：遍历每天每小时的session，然后根据随机索引进行抽取,我们用flatMap算子，遍历所有的<dateHour,(session aggrInfo)>格式的数据
+    val sessionRandomExtract: RDD[SessionRandomExtract] = time2sessionsRDD.flatMap { case (dateHour, items) =>
+      val date = dateHour.split("_")(0)
+      val hour = dateHour.split("_")(1)
+
+      // 从广播变量中提取出数据
+      val dateHourExtractMap = dateHourExtractMapBroadcast.value
+      // 获取指定天对应的指定小时的indexList
+      // 当前小时需要的index集合
+      val extractIndexList: ListBuffer[Int] = dateHourExtractMap.get(date).get(hour)
+
+      // index是在外部进行维护
+      var index = 0
+      val sessionRandomExtractArray = new ArrayBuffer[SessionRandomExtract]()
+      for (sessionAggrInfo <- items) {
+        if (extractIndexList.contains(index)) {
+          sessionRandomExtractArray += SessionRandomExtract(taskUUID, sessionAggrInfo.sessionid,
+            sessionAggrInfo.startTime, sessionAggrInfo.searchKeywords, sessionAggrInfo.clickCategoryIds)
+        }
+        // index自增
+        index += 1
+
+      }
+      sessionRandomExtractArray
+    }
+    println("-----------------打印第三步：遍历每天每小时的session，然后根据随机索引进行抽取-----------------------")
+    sessionRandomExtract.take(5) foreach println
+
+
+    /* 将抽取后的数据保存到MySQL */
+
+    // 引入隐式转换，准备进行RDD向Dataframe的转换
+    import spark.implicits._
+    DataUtils.saveRDD2Mysql[SessionRandomExtract](sessionRandomExtract.toDS(), "session_random_extract")
+    println("-------------------------将抽取后的数据保存到MySQL-------------------------------------")
+
+    // 提取抽取出来的数据中的sessionId
+    val extractSessionidsRDD: RDD[(String, String)] = sessionRandomExtract.map { item => (item.sessionid, item.sessionid) }
+
+    // 第四步：获取抽取出来的session的明细数据
+    // 根据sessionId与详细数据进行聚合
+    val extractSessionDetailRDD: RDD[(String, (String, UserVisitAction))] = extractSessionidsRDD.join(sessionid2actionRDD)
+
+    // 对extractSessionDetailRDD中的数据进行聚合，提炼有价值的明细数据
+    val sessionDetailRDD: RDD[SessionDetail] = extractSessionDetailRDD.map { case (sid, (sessionId, userVisitAction: UserVisitAction)) =>
+      SessionDetail(taskUUID, userVisitAction.user_id, userVisitAction.session_id,
+        userVisitAction.page_id, userVisitAction.action_time, userVisitAction.search_keyword,
+        userVisitAction.click_category_id, userVisitAction.click_product_id, userVisitAction.order_category_ids,
+        userVisitAction.order_product_ids, userVisitAction.pay_category_ids, userVisitAction.pay_product_ids)
+    }
+
+    println("-----------------打印对extractSessionDetailRDD中的数据进行聚合，提炼有价值的明细数据-----------------------")
+    sessionDetailRDD.take(5) foreach println
+
+
+    import spark.implicits._
+    DataUtils.saveRDD2Mysql[SessionDetail](sessionDetailRDD.toDS(), "session_detail")
+    println("--------------------第四步：获取抽取出来的session的明细数据---------------------")
+
+  }
+
 
   /**
    * 计算各session范围占比，并写入MySQL
@@ -166,15 +358,7 @@ object UserVisitSessionAnalyze {
 
     import spark.implicits._
     val sessionAggrStatRDD: RDD[SessionAggrStat] = spark.sparkContext.makeRDD(Array(sessionAggrStat))
-    sessionAggrStatRDD.toDF().write
-      .format("jdbc")
-      .option("url", ConfigurationManager.config.getString(Constants.CONF_JDBC_URL))
-      .option("dbtable", "session_aggr_stat")
-      .option("user", ConfigurationManager.config.getString(Constants.CONF_JDBC_USER))
-      .option("password", ConfigurationManager.config.getString(Constants.CONF_JDBC_PASSWORD))
-      .mode(SaveMode.Append)
-      .save()
-
+    DataUtils.saveRDD2Mysql[SessionAggrStat](sessionAggrStatRDD.toDS(), "session_aggr_stat")
 
   }
 
@@ -185,8 +369,8 @@ object UserVisitSessionAnalyze {
    * @param filteredSessionid2AggrInfoRDD
    * @return
    */
-  private def getSessionid2detailRDD(sessionid2actionRDD: RDD[(String, UserVisitAction)], filteredSessionid2AggrInfoRDD: RDD[(String, SessionAggrInfo)]): RDD[(String, (SessionAggrInfo, UserVisitAction))] = {
-    filteredSessionid2AggrInfoRDD.join(sessionid2actionRDD)
+  private def getSessionid2detailRDD(sessionid2actionRDD: RDD[(String, UserVisitAction)], filteredSessionid2AggrInfoRDD: RDD[(String, SessionAggrInfo)]): RDD[(String, UserVisitAction)] = {
+    filteredSessionid2AggrInfoRDD.join(sessionid2actionRDD).map(item => (item._1, item._2._2))
   }
 
   /**
