@@ -5,6 +5,21 @@ package com.cycloneboy.bigdata.businessanalysis.analyse.model
  * Create by  sl on 2019-11-26 12:15
  */
 
+/**
+ * 聚合统计中间信息
+ *
+ * @param sessionid
+ * @param searchKeywords
+ * @param clickCategoryIds
+ * @param visitLength
+ * @param stepLength
+ * @param startTime
+ * @param userid
+ * @param age
+ * @param professional
+ * @param city
+ * @param sex
+ */
 case class SessionAggrInfo(sessionid: String,
                            searchKeywords: String,
                            clickCategoryIds: String,
@@ -16,6 +31,19 @@ case class SessionAggrInfo(sessionid: String,
                            professional: String,
                            city: String,
                            sex: String)
+
+/**
+ * 统计类别信息总数
+ *
+ * @param categoryId
+ * @param clickCategoryCount
+ * @param orderCategoryCount
+ * @param payCategoryCount
+ */
+case class CategoryIdAggrInfo(categoryId: Long,
+                              clickCategoryCount: Long,
+                              orderCategoryCount: Long,
+                              payCategoryCount: Long)
 
 //***************** 输出表 *********************
 
