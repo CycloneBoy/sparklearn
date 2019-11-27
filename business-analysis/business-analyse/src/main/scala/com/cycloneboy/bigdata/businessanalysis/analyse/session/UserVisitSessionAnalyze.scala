@@ -118,8 +118,101 @@ object UserVisitSessionAnalyze {
     top10CategoryRDD.take(10) foreach println
 
 
+    // 业务功能四：获取top10热门品类的活跃session
+    println("--------------------------------业务功能四：获取top10热门品类的活跃session----------------------------------")
+    getTop10Session(taskUUID, spark, sessionid2detailRDD, top10CategoryRDD)
+
+
     // 关闭Spark上下文
     spark.close()
+  }
+
+  /**
+   * 业务功能四：获取top10热门品类的活跃session
+   *
+   * @param taskId
+   * @param spark
+   * @param sessionid2ActionRDD
+   * @param top10CategoryRDD
+   * @return
+   */
+  def getTop10Session(taskId: String,
+                      spark: SparkSession, sessionid2ActionRDD: RDD[(String, UserVisitAction)],
+                      top10CategoryRDD: RDD[Top10Category]): Any = {
+    // 第一步：将top10热门品类的id，生成一份RDD
+
+    // 获得所有需要求的category集合
+    val top10CategoryIdRDD: RDD[(Long, Long)] = top10CategoryRDD.map { case top10Category: Top10Category =>
+      (top10Category.categoryid, top10Category.categoryid)
+    }
+
+    // 第二步：计算top10品类被各session点击的次数
+
+    // sessionid2ActionRDD是符合过滤(职业、年龄等)条件的完整数据
+    // sessionid2detailRDD ( sessionId, userAction )
+
+    val sessionid2ActionsRDD: RDD[(String, Iterable[UserVisitAction])] = sessionid2ActionRDD.groupByKey()
+
+    val categoryid2SessionCountRDD: RDD[(Long, SessionCountInfo)] = sessionid2ActionsRDD.flatMap { case (sessionid, userVisitActions) =>
+      val categoryCountMap: mutable.HashMap[Long, Long] = new mutable.HashMap[Long, Long]()
+      // userVisitActions中聚合了一个session的所有用户行为数据
+      // 遍历userVisitActions是提取session中的每一个用户行为，并对每一个用户行为中的点击事件进行计数
+
+      for (userVisitAction <- userVisitActions) {
+        // 如果categoryCountMap中尚不存在此点击品类，则新增品类
+        if (!categoryCountMap.contains(userVisitAction.click_category_id)) {
+          categoryCountMap.put(userVisitAction.click_category_id, 0)
+        }
+
+        // 如果categoryCountMap中已经存在此点击品类，则进行累加
+        if (userVisitAction.click_category_id != null && userVisitAction.click_category_id != -1L) {
+          categoryCountMap.update(userVisitAction.click_category_id, categoryCountMap(userVisitAction.click_category_id) + 1)
+        }
+      }
+
+      // 对categoryCountMap中的数据进行格式转化
+      for ((categoryId, count) <- categoryCountMap)
+        yield (categoryId, SessionCountInfo(sessionid, count))
+    }
+
+    // 通过top10热门品类top10CategoryIdRDD与完整品类点击统计categoryid2sessionCountRDD进行join，仅获取热门品类的数据信息
+    // 获取到to10热门品类，被各个session点击的次数【将数据集缩小】
+    val top10CategorySessionCountRDD: RDD[(Long, SessionCountInfo)] = top10CategoryIdRDD.join(categoryid2SessionCountRDD).map { case (categoryId, (cid, sessionCount)) => (categoryId, sessionCount) }
+
+    // 第三步：分组取TopN算法实现，获取每个品类的top10活跃用户
+
+    // 先按照品类分组
+    val top10SessionCountsRDD: RDD[(Long, Iterable[SessionCountInfo])] = top10CategorySessionCountRDD.groupByKey()
+
+    // 将每一个品类的所有点击排序，取前十个，并转换为对象
+    val top10SessionObjectRDD: RDD[Top10Session] = top10SessionCountsRDD.flatMap { case (categoryId, sessionCountInfos) =>
+
+      val top10SessionCountList: List[SessionCountInfo] = sessionCountInfos.toList.sortWith(_.count > _.count).take(10)
+      // 重新整理数据
+      top10SessionCountList.map(sessionCount => Top10Session(taskId, categoryId, sessionCount.sessionid, sessionCount.count))
+    }
+
+    println("-------------------------top10_session---------------------------------")
+    top10SessionObjectRDD.take(10) foreach println
+
+    import spark.implicits._
+    DataUtils.saveRDD2Mysql(top10SessionObjectRDD.toDS(), "top10_session")
+    println("----------------------------第三步：将top10_session结果以追加方式写入到MySQL中------------------------")
+
+    val top10SessionRDD: RDD[(String, String)] = top10SessionObjectRDD.map(item => (item.sessionid, item.sessionid))
+
+    // 第四步：获取top10活跃session的明细数据
+    val sessionDetailRDD: RDD[SessionDetail] = top10SessionRDD.join(sessionid2ActionRDD).map { case (sessionid, (sid, userVisitAction: UserVisitAction)) =>
+      SessionDetail(taskId, userVisitAction.user_id, userVisitAction.session_id,
+        userVisitAction.page_id, userVisitAction.action_time, userVisitAction.search_keyword,
+        userVisitAction.click_category_id, userVisitAction.click_product_id, userVisitAction.order_category_ids,
+        userVisitAction.order_product_ids, userVisitAction.pay_category_ids, userVisitAction.pay_product_ids)
+    }
+
+    import spark.implicits._
+    DataUtils.saveRDD2Mysql(sessionDetailRDD.toDS(), "session_detail")
+    println("----------------------------第四步：将活跃Session的明细数据，写入到MySQL中------------------------")
+    sessionDetailRDD.take(10) foreach println
   }
 
   /**
@@ -133,28 +226,29 @@ object UserVisitSessionAnalyze {
     // 第一步：获取每一个Sessionid 点击过、下单过、支付过的数量
 
     // 获取所有产生过点击、下单、支付中任意行为的商品类别
-    val categoryidRDD: RDD[(Long, Long)] = sessionid2detailRDD.flatMap { case (sessionid, userVisitAction: UserVisitAction) =>
-      val list = ArrayBuffer[(Long, Long)]()
+    val categoryidRDD: RDD[(Long, Long)] = sessionid2detailRDD.flatMap {
+      case (sessionid, userVisitAction: UserVisitAction) =>
+        val list = ArrayBuffer[(Long, Long)]()
 
-      // 一个session中点击的商品ID
-      if (userVisitAction.click_category_id != -1L) {
-        list += ((userVisitAction.click_category_id, userVisitAction.click_category_id))
-      }
-
-      // 一个session中下单的商品ID集合
-      if (userVisitAction.order_category_ids != null) {
-        for (orderCategoryId <- userVisitAction.order_category_ids.split(",")) {
-          list += ((orderCategoryId.toLong, orderCategoryId.toLong))
+        // 一个session中点击的商品ID
+        if (userVisitAction.click_category_id != -1L) {
+          list += ((userVisitAction.click_category_id, userVisitAction.click_category_id))
         }
-      }
 
-      // 一个session中支付的商品ID集合
-      if (userVisitAction.pay_category_ids != null) {
-        for (payCategoryId <- userVisitAction.pay_category_ids.split(",")) {
-          list += ((payCategoryId.toLong, payCategoryId.toLong))
+        // 一个session中下单的商品ID集合
+        if (userVisitAction.order_category_ids != null) {
+          for (orderCategoryId <- userVisitAction.order_category_ids.split(",")) {
+            list += ((orderCategoryId.toLong, orderCategoryId.toLong))
+          }
         }
-      }
-      list
+
+        // 一个session中支付的商品ID集合
+        if (userVisitAction.pay_category_ids != null) {
+          for (payCategoryId <- userVisitAction.pay_category_ids.split(",")) {
+            list += ((payCategoryId.toLong, payCategoryId.toLong))
+          }
+        }
+        list
     }
 
     // 对重复的categoryid进行去重
@@ -195,12 +289,12 @@ object UserVisitSessionAnalyze {
     // 第六步：用take(10)取出top10热门品类，并写入MySQL
 
     val top10CategoryList: Array[(CategorySortKey, CategoryIdAggrInfo)] = sortedCategoryCountRDD.take(10)
-    val top10Category: Array[Top10Category] = top10CategoryList.map { case (categorySortKey: CategorySortKey, categoryIdAggrInfo: CategoryIdAggrInfo) =>
-      Top10Category(taskUUID, categoryIdAggrInfo.categoryId, categoryIdAggrInfo.clickCategoryCount,
-        categoryIdAggrInfo.orderCategoryCount, categoryIdAggrInfo.payCategoryCount)
+    val top10Category: Array[Top10Category] = top10CategoryList.map {
+      case (categorySortKey: CategorySortKey, categoryIdAggrInfo: CategoryIdAggrInfo) =>
+        Top10Category(taskUUID, categoryIdAggrInfo.categoryId, categoryIdAggrInfo.clickCategoryCount,
+          categoryIdAggrInfo.orderCategoryCount, categoryIdAggrInfo.payCategoryCount)
     }
     val top10CategoryRDD: RDD[Top10Category] = spark.sparkContext.makeRDD(top10Category)
-
     import spark.implicits._
     DataUtils.saveRDD2Mysql(top10CategoryRDD.toDS(), "top10_category")
 
@@ -249,14 +343,16 @@ object UserVisitSessionAnalyze {
    */
   def getClickCategoryId2CountRDD(sessionid2detailRDD: RDD[(String, UserVisitAction)]) = {
     // 只将点击行为过滤出来
-    val clickActionRDD: RDD[(String, UserVisitAction)] = sessionid2detailRDD.filter { case (sessionid, userVisitAction: UserVisitAction) =>
-      userVisitAction.click_category_id != null
+    val clickActionRDD: RDD[(String, UserVisitAction)] = sessionid2detailRDD.filter {
+      case (sessionid, userVisitAction: UserVisitAction) =>
+        userVisitAction.click_category_id != null
     }
 
     // 获取每种类别的点击次数
     // map阶段：(品类ID，1L)
-    val clickCategoryIdRDD: RDD[(Long, Long)] = clickActionRDD.map { case (sessionid, userVisitAction: UserVisitAction) =>
-      (userVisitAction.click_category_id, 1L)
+    val clickCategoryIdRDD: RDD[(Long, Long)] = clickActionRDD.map {
+      case (sessionid, userVisitAction: UserVisitAction) =>
+        (userVisitAction.click_category_id, 1L)
     }
 
     // 计算各个品类的点击次数
@@ -272,13 +368,15 @@ object UserVisitSessionAnalyze {
    */
   def getOrderCategoryId2CountRDD(sessionid2detailRDD: RDD[(String, UserVisitAction)]) = {
     // 过滤订单数据
-    val orderActionRDD: RDD[(String, UserVisitAction)] = sessionid2detailRDD.filter { case (sessionid, userVisitAction: UserVisitAction) =>
-      userVisitAction.order_category_ids != null
+    val orderActionRDD: RDD[(String, UserVisitAction)] = sessionid2detailRDD.filter {
+      case (sessionid, userVisitAction: UserVisitAction) =>
+        userVisitAction.order_category_ids != null
     }
 
     // 获取每种类别的下单次数
-    val orderCategoryIdRDD: RDD[(Long, Long)] = orderActionRDD.flatMap { case (sessionid, userVisitAction: UserVisitAction) =>
-      userVisitAction.order_category_ids.split(",").map(item => (item.toLong, 1L))
+    val orderCategoryIdRDD: RDD[(Long, Long)] = orderActionRDD.flatMap {
+      case (sessionid, userVisitAction: UserVisitAction) =>
+        userVisitAction.order_category_ids.split(",").map(item => (item.toLong, 1L))
     }
 
     // 计算各个品类的下单次数
@@ -294,13 +392,15 @@ object UserVisitSessionAnalyze {
    */
   def getPayCategoryId2CountRDD(sessionid2detailRDD: RDD[(String, UserVisitAction)]) = {
     // 过滤支付数据
-    val payActionRDD: RDD[(String, UserVisitAction)] = sessionid2detailRDD.filter { case (sessionid, userVisitAction: UserVisitAction) =>
-      userVisitAction.pay_category_ids != null
+    val payActionRDD: RDD[(String, UserVisitAction)] = sessionid2detailRDD.filter {
+      case (sessionid, userVisitAction: UserVisitAction) =>
+        userVisitAction.pay_category_ids != null
     }
 
     // 获取每种类别的下单次数
-    val payCategoryIdRDD: RDD[(Long, Long)] = payActionRDD.flatMap { case (sessionid, userVisitAction: UserVisitAction) =>
-      userVisitAction.pay_category_ids.split(",").map(item => (item.toLong, 1L))
+    val payCategoryIdRDD: RDD[(Long, Long)] = payActionRDD.flatMap {
+      case (sessionid, userVisitAction: UserVisitAction) =>
+        userVisitAction.pay_category_ids.split(",").map(item => (item.toLong, 1L))
     }
 
     // 计算各个品类的下单次数
@@ -315,16 +415,17 @@ object UserVisitSessionAnalyze {
    * @param sessionid2AggrInfoRDD
    * @param sessionid2actionRDD
    */
-  private def randomExtractSession(taskUUID: String, spark: SparkSession,
-                                   sessionid2AggrInfoRDD: RDD[(String, SessionAggrInfo)],
-                                   sessionid2actionRDD: RDD[(String, UserVisitAction)],
-                                   taskParam: JSONObject) = {
+  def randomExtractSession(taskUUID: String, spark: SparkSession,
+                           sessionid2AggrInfoRDD: RDD[(String, SessionAggrInfo)],
+                           sessionid2actionRDD: RDD[(String, UserVisitAction)],
+                           taskParam: JSONObject) = {
 
     // 第一步，计算出每天每小时的session数量，获取<yyyy-MM-dd_HH,aggrInfo>格式的RDD
-    val time2sessionidRDD: RDD[(String, SessionAggrInfo)] = sessionid2AggrInfoRDD.map { case (sessionid, aggrInfo) =>
-      val startTime = aggrInfo.startTime
-      val dateHour = DateUtils.getDateHour(startTime)
-      (dateHour, aggrInfo)
+    val time2sessionidRDD: RDD[(String, SessionAggrInfo)] = sessionid2AggrInfoRDD.map {
+      case (sessionid, aggrInfo) =>
+        val startTime = aggrInfo.startTime
+        val dateHour = DateUtils.getDateHour(startTime)
+        (dateHour, aggrInfo)
     }
 
     println("-----------------打印第一步，计算出每天每小时的session数量，获取<yyyy-MM-dd_HH,aggrInfo>格式的RDD-----------------------")
@@ -345,7 +446,8 @@ object UserVisitSessionAnalyze {
       // 通过模式匹配实现了if的功能
       dateHourCountMap.get(date) match {
         // 对应日期的数据不存在，则新增
-        case None => dateHourCountMap(date) = new mutable.HashMap[String, Long](); dateHourCountMap(date) += (hour -> count)
+        case None => dateHourCountMap(date) = new mutable.HashMap[String, Long]();
+          dateHourCountMap(date) += (hour -> count)
         // 对应日期的数据存在，则更新
         // 如果有值，Some(hourCountMap)将值取到了hourCountMap中
         case Some(hourCountMap) => hourCountMap += (hour -> count)
@@ -436,29 +538,30 @@ object UserVisitSessionAnalyze {
     val time2sessionsRDD: RDD[(String, Iterable[SessionAggrInfo])] = time2sessionidRDD.groupByKey()
 
     // 第三步：遍历每天每小时的session，然后根据随机索引进行抽取,我们用flatMap算子，遍历所有的<dateHour,(session aggrInfo)>格式的数据
-    val sessionRandomExtract: RDD[SessionRandomExtract] = time2sessionsRDD.flatMap { case (dateHour, items) =>
-      val date = dateHour.split("_")(0)
-      val hour = dateHour.split("_")(1)
+    val sessionRandomExtract: RDD[SessionRandomExtract] = time2sessionsRDD.flatMap {
+      case (dateHour, items) =>
+        val date = dateHour.split("_")(0)
+        val hour = dateHour.split("_")(1)
 
-      // 从广播变量中提取出数据
-      val dateHourExtractMap = dateHourExtractMapBroadcast.value
-      // 获取指定天对应的指定小时的indexList
-      // 当前小时需要的index集合
-      val extractIndexList: ListBuffer[Int] = dateHourExtractMap.get(date).get(hour)
+        // 从广播变量中提取出数据
+        val dateHourExtractMap = dateHourExtractMapBroadcast.value
+        // 获取指定天对应的指定小时的indexList
+        // 当前小时需要的index集合
+        val extractIndexList: ListBuffer[Int] = dateHourExtractMap.get(date).get(hour)
 
-      // index是在外部进行维护
-      var index = 0
-      val sessionRandomExtractArray = new ArrayBuffer[SessionRandomExtract]()
-      for (sessionAggrInfo <- items) {
-        if (extractIndexList.contains(index)) {
-          sessionRandomExtractArray += SessionRandomExtract(taskUUID, sessionAggrInfo.sessionid,
-            sessionAggrInfo.startTime, sessionAggrInfo.searchKeywords, sessionAggrInfo.clickCategoryIds)
+        // index是在外部进行维护
+        var index = 0
+        val sessionRandomExtractArray = new ArrayBuffer[SessionRandomExtract]()
+        for (sessionAggrInfo <- items) {
+          if (extractIndexList.contains(index)) {
+            sessionRandomExtractArray += SessionRandomExtract(taskUUID, sessionAggrInfo.sessionid,
+              sessionAggrInfo.startTime, sessionAggrInfo.searchKeywords, sessionAggrInfo.clickCategoryIds)
+          }
+          // index自增
+          index += 1
+
         }
-        // index自增
-        index += 1
-
-      }
-      sessionRandomExtractArray
+        sessionRandomExtractArray
     }
     println("-----------------打印第三步：遍历每天每小时的session，然后根据随机索引进行抽取-----------------------")
     sessionRandomExtract.take(5) foreach println
@@ -472,24 +575,25 @@ object UserVisitSessionAnalyze {
     println("-------------------------将抽取后的数据保存到MySQL-------------------------------------")
 
     // 提取抽取出来的数据中的sessionId
-    val extractSessionidsRDD: RDD[(String, String)] = sessionRandomExtract.map { item => (item.sessionid, item.sessionid) }
+    val extractSessionidsRDD: RDD[(String, String)] = sessionRandomExtract.map {
+      item => (item.sessionid, item.sessionid)
+    }
 
     // 第四步：获取抽取出来的session的明细数据
     // 根据sessionId与详细数据进行聚合
     val extractSessionDetailRDD: RDD[(String, (String, UserVisitAction))] = extractSessionidsRDD.join(sessionid2actionRDD)
 
     // 对extractSessionDetailRDD中的数据进行聚合，提炼有价值的明细数据
-    val sessionDetailRDD: RDD[SessionDetail] = extractSessionDetailRDD.map { case (sid, (sessionId, userVisitAction: UserVisitAction)) =>
-      SessionDetail(taskUUID, userVisitAction.user_id, userVisitAction.session_id,
-        userVisitAction.page_id, userVisitAction.action_time, userVisitAction.search_keyword,
-        userVisitAction.click_category_id, userVisitAction.click_product_id, userVisitAction.order_category_ids,
-        userVisitAction.order_product_ids, userVisitAction.pay_category_ids, userVisitAction.pay_product_ids)
+    val sessionDetailRDD: RDD[SessionDetail] = extractSessionDetailRDD.map {
+      case (sid, (sessionId, userVisitAction: UserVisitAction)) =>
+        SessionDetail(taskUUID, userVisitAction.user_id, userVisitAction.session_id,
+          userVisitAction.page_id, userVisitAction.action_time, userVisitAction.search_keyword,
+          userVisitAction.click_category_id, userVisitAction.click_product_id, userVisitAction.order_category_ids,
+          userVisitAction.order_product_ids, userVisitAction.pay_category_ids, userVisitAction.pay_product_ids)
     }
 
     println("-----------------打印对extractSessionDetailRDD中的数据进行聚合，提炼有价值的明细数据-----------------------")
     sessionDetailRDD.take(5) foreach println
-
-
     import spark.implicits._
     DataUtils.saveRDD2Mysql[SessionDetail](sessionDetailRDD.toDS(), "session_detail")
     println("--------------------第四步：获取抽取出来的session的明细数据---------------------")
@@ -504,7 +608,9 @@ object UserVisitSessionAnalyze {
    * @param value
    * @param taskUUID
    */
-  private def calculateAndPersistAggrStat(spark: SparkSession, value: mutable.HashMap[String, Int], taskUUID: String) = {
+  private def calculateAndPersistAggrStat(spark: SparkSession, value: mutable.HashMap[String, Int], taskUUID: String)
+
+  = {
 
     value.foreach {
       case (k, v) => println(s"$k -> " + v)
@@ -555,9 +661,8 @@ object UserVisitSessionAnalyze {
       visit_length_3m_10m_ratio, visit_length_10m_30m_ratio, visit_length_30m_ratio,
       step_length_1_3_ratio, step_length_4_6_ratio, step_length_7_9_ratio,
       step_length_10_30_ratio, step_length_30_60_ratio, step_length_60_ratio)
-
-    import spark.implicits._
     val sessionAggrStatRDD: RDD[SessionAggrStat] = spark.sparkContext.makeRDD(Array(sessionAggrStat))
+    import spark.implicits._
     DataUtils.saveRDD2Mysql[SessionAggrStat](sessionAggrStatRDD.toDS(), "session_aggr_stat")
 
   }
@@ -570,7 +675,9 @@ object UserVisitSessionAnalyze {
    * @return
    */
   private def getSessionid2detailRDD(sessionid2actionRDD: RDD[(String, UserVisitAction)],
-                                     filteredSessionid2AggrInfoRDD: RDD[(String, SessionAggrInfo)]): RDD[(String, UserVisitAction)] = {
+                                     filteredSessionid2AggrInfoRDD: RDD[(String, SessionAggrInfo)]): RDD[(String, UserVisitAction)]
+
+  = {
     filteredSessionid2AggrInfoRDD.join(sessionid2actionRDD).map(item => (item._1, item._2._2))
   }
 
@@ -584,7 +691,9 @@ object UserVisitSessionAnalyze {
    */
   private def filterSessionAndAggrStat(taskParam: JSONObject,
                                        session2AggrInfoRDD: RDD[(String, SessionAggrInfo)],
-                                       sessionAggrStatAccumulator: AccumulatorV2[String, mutable.HashMap[String, Int]]): RDD[(String, SessionAggrInfo)] = {
+                                       sessionAggrStatAccumulator: AccumulatorV2[String, mutable.HashMap[String, Int]]): RDD[(String, SessionAggrInfo)]
+
+  = {
     // 获取查询任务中的配置
     val startAge = ParamUtils.getParam(taskParam, Constants.PARAM_START_AGE)
     val endAge = ParamUtils.getParam(taskParam, Constants.PARAM_END_AGE)
@@ -709,77 +818,79 @@ object UserVisitSessionAnalyze {
     val sessionid2ActionRDD: RDD[(String, Iterable[UserVisitAction])] = sessionid2actionRDD.groupByKey()
 
     // 对每一个session分组进行聚合，将session中所有的搜索词和点击品类都聚合起来，<userid,partAggrInfo(sessionid,searchKeywords,clickCategoryIds)>
-    val userid2PartAggrInfoRDD = sessionid2ActionRDD.map { case (sessionid, userVisitActions) =>
+    val userid2PartAggrInfoRDD = sessionid2ActionRDD.map {
+      case (sessionid, userVisitActions) =>
 
-      var searchKeywordsBuffer: StringBuffer = new StringBuffer("")
-      var clickCategoryBuffer: StringBuffer = new StringBuffer("")
+        var searchKeywordsBuffer: StringBuffer = new StringBuffer("")
+        var clickCategoryBuffer: StringBuffer = new StringBuffer("")
 
-      var userid = -1L
+        var userid = -1L
 
-      // session的起始和结束时间
-      var startTime: Date = null
-      var endTime: Date = null
+        // session的起始和结束时间
+        var startTime: Date = null
+        var endTime: Date = null
 
-      // session的访问步长
-      var stepLength = 0
+        // session的访问步长
+        var stepLength = 0
 
-      // 遍历session所有的访问行为
-      userVisitActions.foreach { userVisitAction =>
-        if (userid == -1L) {
-          userid = userVisitAction.user_id
+        // 遍历session所有的访问行为
+        userVisitActions.foreach {
+          userVisitAction =>
+            if (userid == -1L) {
+              userid = userVisitAction.user_id
+            }
+
+            val searchKeyword = userVisitAction.search_keyword
+            val clickCategoryId = userVisitAction.click_category_id
+
+            // 实际上这里要对数据说明一下
+            // 并不是每一行访问行为都有searchKeyword何clickCategoryId两个字段的
+            // 其实，只有搜索行为，是有searchKeyword字段的
+            // 只有点击品类的行为，是有clickCategoryId字段的
+            // 所以，任何一行行为数据，都不可能两个字段都有，所以数据是可能出现null值的
+
+            // 我们决定是否将搜索词或点击品类id拼接到字符串中去
+            // 首先要满足：不能是null值
+            // 其次，之前的字符串中还没有搜索词或者点击品类id
+
+            if (StringUtils.isNotEmpty(searchKeyword)) {
+              if (!searchKeywordsBuffer.toString.contains(searchKeyword)) {
+                searchKeywordsBuffer.append(searchKeyword + ",")
+              }
+            }
+
+            if (clickCategoryId != null && clickCategoryId != -1L) {
+              if (!clickCategoryBuffer.toString.contains(clickCategoryId.toString)) {
+                clickCategoryBuffer.append(clickCategoryId + ",")
+              }
+            }
+
+            // 计算session开始和结束时间
+            val actionTime: Date = DateUtils.parseTime(userVisitAction.action_time)
+
+            if (startTime == null || actionTime.before(startTime)) {
+              startTime = actionTime
+            }
+
+            if (endTime == null || actionTime.after(endTime)) {
+              endTime = actionTime
+            }
+
+            // 计算session访问步长
+            stepLength += 1
         }
 
-        val searchKeyword = userVisitAction.search_keyword
-        val clickCategoryId = userVisitAction.click_category_id
+        val searchKeywords = StringUtils.trimComma(searchKeywordsBuffer.toString)
+        val clickCategoryIds = StringUtils.trimComma(clickCategoryBuffer.toString)
 
-        // 实际上这里要对数据说明一下
-        // 并不是每一行访问行为都有searchKeyword何clickCategoryId两个字段的
-        // 其实，只有搜索行为，是有searchKeyword字段的
-        // 只有点击品类的行为，是有clickCategoryId字段的
-        // 所以，任何一行行为数据，都不可能两个字段都有，所以数据是可能出现null值的
+        // 计算session 访问时长(秒)
+        val visitLength = (endTime.getTime - startTime.getTime) / 1000
 
-        // 我们决定是否将搜索词或点击品类id拼接到字符串中去
-        // 首先要满足：不能是null值
-        // 其次，之前的字符串中还没有搜索词或者点击品类id
+        // 聚合数据
+        val partAggrInfo = SessionAggrInfo(sessionid, searchKeywords, clickCategoryIds, visitLength, stepLength,
+          DateUtils.formatTime(startTime), userid, -1, "", "", "")
 
-        if (StringUtils.isNotEmpty(searchKeyword)) {
-          if (!searchKeywordsBuffer.toString.contains(searchKeyword)) {
-            searchKeywordsBuffer.append(searchKeyword + ",")
-          }
-        }
-
-        if (clickCategoryId != null && clickCategoryId != -1L) {
-          if (!clickCategoryBuffer.toString.contains(clickCategoryId.toString)) {
-            clickCategoryBuffer.append(clickCategoryId + ",")
-          }
-        }
-
-        // 计算session开始和结束时间
-        val actionTime: Date = DateUtils.parseTime(userVisitAction.action_time)
-
-        if (startTime == null || actionTime.before(startTime)) {
-          startTime = actionTime
-        }
-
-        if (endTime == null || actionTime.after(endTime)) {
-          endTime = actionTime
-        }
-
-        // 计算session访问步长
-        stepLength += 1
-      }
-
-      val searchKeywords = StringUtils.trimComma(searchKeywordsBuffer.toString)
-      val clickCategoryIds = StringUtils.trimComma(clickCategoryBuffer.toString)
-
-      // 计算session 访问时长(秒)
-      val visitLength = (endTime.getTime - startTime.getTime) / 1000
-
-      // 聚合数据
-      val partAggrInfo = SessionAggrInfo(sessionid, searchKeywords, clickCategoryIds, visitLength, stepLength,
-        DateUtils.formatTime(startTime), userid, -1, "", "", "")
-
-      (userid.toString, partAggrInfo)
+        (userid.toString, partAggrInfo)
     }
 
     // 和用户数据进行join
@@ -791,15 +902,16 @@ object UserVisitSessionAnalyze {
     val userid2FullInfoRDD: RDD[(String, (SessionAggrInfo, UserInfo))] = userid2PartAggrInfoRDD.join(userid2InfoRDD)
 
     // 对join起来的数据进行拼接，并且返回<sessionid,fullAggrInfo>格式的数据
-    userid2FullInfoRDD.map { case (userid, (partAggrInfo, userInfo)) =>
-      val sessionid = partAggrInfo.sessionid
+    userid2FullInfoRDD.map {
+      case (userid, (partAggrInfo, userInfo)) =>
+        val sessionid = partAggrInfo.sessionid
 
-      // 聚合数据
-      val fullAggrInfo = SessionAggrInfo(partAggrInfo.sessionid,
-        partAggrInfo.searchKeywords, partAggrInfo.clickCategoryIds, partAggrInfo.visitLength, partAggrInfo.stepLength, partAggrInfo.startTime,
-        userid.toLong, userInfo.age, userInfo.professional, userInfo.city, userInfo.sex)
+        // 聚合数据
+        val fullAggrInfo = SessionAggrInfo(partAggrInfo.sessionid,
+          partAggrInfo.searchKeywords, partAggrInfo.clickCategoryIds, partAggrInfo.visitLength, partAggrInfo.stepLength, partAggrInfo.startTime,
+          userid.toLong, userInfo.age, userInfo.professional, userInfo.city, userInfo.sex)
 
-      (sessionid, fullAggrInfo)
+        (sessionid, fullAggrInfo)
     }
   }
 

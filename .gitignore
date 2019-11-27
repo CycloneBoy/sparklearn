@@ -1,5 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 ### Scala template
+
+# Java class files
 *.class
 *.log
 # Intellij

@@ -45,6 +45,23 @@ case class CategoryIdAggrInfo(categoryId: Long,
                               orderCategoryCount: Long,
                               payCategoryCount: Long)
 
+/**
+ * session汇总统计
+ *
+ * 倒序排列
+ *
+ * @param sessionid
+ * @param count
+ */
+case class SessionCountInfo(sessionid: String, count: Long) extends Ordered[SessionCountInfo] {
+  override def compare(that: SessionCountInfo): Int = {
+    if (this.count - that.count != 0) {
+      return (that.count - this.count).toInt
+    }
+    0
+  }
+}
+
 //***************** 输出表 *********************
 
 /**
