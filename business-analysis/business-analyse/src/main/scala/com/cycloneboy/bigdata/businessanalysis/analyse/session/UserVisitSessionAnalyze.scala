@@ -3,7 +3,7 @@ package com.cycloneboy.bigdata.businessanalysis.analyse.session
 import java.util.{Date, UUID}
 
 import com.cycloneboy.bigdata.businessanalysis.analyse.model._
-import com.cycloneboy.bigdata.businessanalysis.analyse.utils.DataUtils
+import com.cycloneboy.bigdata.businessanalysis.analyse.utils.{DataUtils, ProcessUtils}
 import com.cycloneboy.bigdata.businessanalysis.commons.common.Constants
 import com.cycloneboy.bigdata.businessanalysis.commons.conf.ConfigurationManager
 import com.cycloneboy.bigdata.businessanalysis.commons.model.{UserInfo, UserVisitAction}
@@ -55,7 +55,7 @@ object UserVisitSessionAnalyze {
     spark.sparkContext.setLogLevel("error")
     val sc = spark.sparkContext
 
-    val actionRdd = getActionRDDByDateRange(spark, taskParam)
+    val actionRdd = ProcessUtils.getActionRDDByDateRange(spark, taskParam)
 
     // 打印测试数据是否读入正确
     println("-----------------打印测试数据是否读入正确-----------------------")
@@ -915,20 +915,5 @@ object UserVisitSessionAnalyze {
     }
   }
 
-  /**
-   * 根据日期获取对象的用户行为数据
-   *
-   * @param spark
-   * @param taskParam
-   * @return
-   */
-  def getActionRDDByDateRange(spark: SparkSession, taskParam: JSONObject): RDD[UserVisitAction] = {
-    val startDate = ParamUtils.getParam(taskParam, Constants.PARAM_START_DATE)
-    val endDate = ParamUtils.getParam(taskParam, Constants.PARAM_END_DATE)
 
-    import spark.implicits._
-    spark.sql("select * from user_visit_action where date >='" + startDate + "' and date<='" + endDate + "'")
-      .as[UserVisitAction].rdd
-
-  }
 }
