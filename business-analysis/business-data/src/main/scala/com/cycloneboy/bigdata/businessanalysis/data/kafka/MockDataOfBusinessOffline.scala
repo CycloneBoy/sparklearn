@@ -3,6 +3,7 @@ package com.cycloneboy.bigdata.businessanalysis.data.kafka
 import java.util.UUID
 
 import com.cycloneboy.bigdata.businessanalysis.commons.common.Constants
+import com.cycloneboy.bigdata.businessanalysis.commons.conf.ConfigurationManager
 import com.cycloneboy.bigdata.businessanalysis.commons.model.{ProductInfo, UserInfo, UserVisitAction}
 import com.cycloneboy.bigdata.businessanalysis.commons.utils.{DateUtils, StringUtils}
 import org.apache.spark.sql.{DataFrame, SparkSession}
@@ -15,6 +16,12 @@ import scala.util.Random
  * Create by  sl on 2019-11-25 16:18
  */
 object MockDataOfBusinessOffline {
+
+  val maxNumberOfCity = ConfigurationManager.config.getInt(Constants.MOCK_NUMBER_OF_CITY)
+  val maxNumberOfAd = ConfigurationManager.config.getInt(Constants.MOCK_NUMBER_OF_AD)
+  val maxNumberOfUser = ConfigurationManager.config.getInt(Constants.MOCK_NUMBER_OF_USER)
+  val maxNumberOfProduct = ConfigurationManager.config.getInt(Constants.MOCK_NUMBER_OF_PRODUCT)
+  val maxNumberOfCategory = ConfigurationManager.config.getInt(Constants.MOCK_NUMBER_OF_CATEGORY)
 
 
   /**
@@ -46,7 +53,7 @@ object MockDataOfBusinessOffline {
     val rows = ArrayBuffer[UserVisitAction]()
 
     // 生成100个用户
-    for (i <- 0 to Constants.MOCK_NUMBER_OF_USER) {
+    for (i <- 0 to maxNumberOfUser) {
       val userId = random.nextInt(100)
       // 每个用户生成10个session
       for (j <- 0 to 10) {
@@ -67,18 +74,18 @@ object MockDataOfBusinessOffline {
           var orderProductIds: String = null
           var payCategoryIds: String = null
           var payProductIds: String = null
-          val cityId = random.nextInt(Constants.MOCK_NUMBER_OF_CITY).toLong
+          val cityId = random.nextInt(maxNumberOfCity).toLong
           // 随机确定用户在当前session中的行为
           val action = actions(random.nextInt(4))
 
           action match {
             case "search" => searchKeyword = searchKeywords(random.nextInt(searchKeywords.length))
-            case "click" => clickCategoryId = random.nextInt(Constants.MOCK_NUMBER_OF_CATEGORY).toLong
-              clickProductId = random.nextInt(Constants.MOCK_NUMBER_OF_PRODUCT).toLong
-            case "order" => orderCategoryIds = random.nextInt(Constants.MOCK_NUMBER_OF_CATEGORY).toString
-              orderProductIds = random.nextInt(Constants.MOCK_NUMBER_OF_PRODUCT).toString
-            case "pay" => payCategoryIds = random.nextInt(Constants.MOCK_NUMBER_OF_CATEGORY).toString
-              payProductIds = random.nextInt(Constants.MOCK_NUMBER_OF_PRODUCT).toString
+            case "click" => clickCategoryId = random.nextInt(maxNumberOfCategory).toLong
+              clickProductId = random.nextInt(maxNumberOfProduct).toLong
+            case "order" => orderCategoryIds = random.nextInt(maxNumberOfCategory).toString
+              orderProductIds = random.nextInt(maxNumberOfProduct).toString
+            case "pay" => payCategoryIds = random.nextInt(maxNumberOfCategory).toString
+              payProductIds = random.nextInt(maxNumberOfProduct).toString
           }
 
           rows += UserVisitAction(date, userId, sessionId,
@@ -103,13 +110,13 @@ object MockDataOfBusinessOffline {
     val sexes = Array("male", "female")
     val random = new Random()
 
-    for (i <- 0 to Constants.MOCK_NUMBER_OF_USER) {
+    for (i <- 0 to maxNumberOfUser) {
       val userId = i
       val username = "user" + i
       val name = "name" + i
       val age = random.nextInt(60) + 10
       val professional = "professional" + random.nextInt(100)
-      val city = "city" + random.nextInt(Constants.MOCK_NUMBER_OF_CITY)
+      val city = "city" + random.nextInt(maxNumberOfCity)
       val sex = sexes(random.nextInt(2))
       rows += UserInfo(userId, username, name, age,
         professional, city, sex)
@@ -130,7 +137,7 @@ object MockDataOfBusinessOffline {
     val productStatus = Array(0, 1)
 
     // 随机产生100个产品信息
-    for (i <- 0 to Constants.MOCK_NUMBER_OF_PRODUCT) {
+    for (i <- 0 to maxNumberOfProduct) {
       val productId = i
       val productName = "product" + i
       val extendInfo = "{\"product_status\": " + productStatus(random.nextInt(2)) + "}"

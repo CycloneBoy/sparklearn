@@ -20,6 +20,11 @@ import scala.util.Random
  */
 object MockDataOfBusinessOnline {
 
+  val maxNumberOfCity = ConfigurationManager.config.getInt(Constants.MOCK_NUMBER_OF_CITY)
+  val maxNumberOfAd = ConfigurationManager.config.getInt(Constants.MOCK_NUMBER_OF_AD)
+  val maxNumberOfUser = ConfigurationManager.config.getInt(Constants.MOCK_NUMBER_OF_USER)
+
+
   /**
    * 模拟的数据
    * 时间点: 当前时间毫秒
@@ -38,10 +43,10 @@ object MockDataOfBusinessOnline {
     for (i <- 0 to 50) {
 
       val timestamp = System.currentTimeMillis()
-      val province = random.nextInt(Constants.MOCK_NUMBER_OF_CITY)
+      val province = random.nextInt(maxNumberOfCity)
       val city = province
-      val adid = random.nextInt(Constants.MOCK_NUMBER_OF_AD)
-      val userid = random.nextInt(Constants.MOCK_NUMBER_OF_USER)
+      val adid = random.nextInt(maxNumberOfAd)
+      val userid = random.nextInt(maxNumberOfUser)
 
       // 拼接实时数据
       array += timestamp + " " + province + " " + city + " " + userid + " " + adid

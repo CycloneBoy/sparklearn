@@ -18,6 +18,7 @@ object Constants {
 
   val CONF_KAFKA_BROKER_LIST = "kafka.broker.list"
   val CONF_KAFKA_TOPICS = "kafka.topics"
+  val CONF_AD_BLACK_LIST_FILTER_MAX = "ad.blacklist.filter.max"
 
 
   /** *******************************************************************************
@@ -28,27 +29,27 @@ object Constants {
   /**
    * 用户数量
    */
-  val MOCK_NUMBER_OF_USER = 100
+  val MOCK_NUMBER_OF_USER = "mock.number.of.user"
 
   /**
    * 城市数量
    */
-  val MOCK_NUMBER_OF_CITY = 100
+  val MOCK_NUMBER_OF_CITY = "mock.number.of.city"
 
   /**
    * 产品数量
    */
-  val MOCK_NUMBER_OF_PRODUCT = 100
+  val MOCK_NUMBER_OF_PRODUCT = "mock.number.of.product"
 
   /**
    * 品类数量
    */
-  val MOCK_NUMBER_OF_CATEGORY = 50
+  val MOCK_NUMBER_OF_CATEGORY = "mock.number.of.category"
 
   /**
    * 广告数量
    */
-  val MOCK_NUMBER_OF_AD = 20
+  val MOCK_NUMBER_OF_AD = "mock.number.of.ad"
 
 
   /** *********************************************************************************
@@ -116,4 +117,10 @@ object Constants {
    */
   val TABLE_USER_VISIT_ACTION = "user_visit_action"
   val TABLE_PRODUCT_INFO = "product_info"
+
+  val TABLE_AD_BLACKLIST = "ad_blacklist"
+  val TABLE_AD_STAT = "ad_stat"
+  val TABLE_AD_USER_CLICK_COUNT = "ad_user_click_count"
+  val TABLE_AD_PROVINCE_TOP3 = "ad_province_top3"
+  val TABLE_AD_CLICK_TREND = "ad_click_trend"
 }
