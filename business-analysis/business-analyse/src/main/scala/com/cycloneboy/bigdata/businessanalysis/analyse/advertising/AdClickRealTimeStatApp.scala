@@ -3,8 +3,8 @@ package com.cycloneboy.bigdata.businessanalysis.analyse.advertising
 import java.lang
 import java.util.{Date, UUID}
 
-import com.cycloneboy.bigdata.businessanalysis.analyse.dao.{AdBlackListDao, AdProvinceTop3Dao, AdStatDao, AdUserClickCountDao}
-import com.cycloneboy.bigdata.businessanalysis.analyse.model.{AdBlacklist, AdProvinceTop3, AdStat, AdUserClickCount}
+import com.cycloneboy.bigdata.businessanalysis.analyse.dao._
+import com.cycloneboy.bigdata.businessanalysis.analyse.model._
 import com.cycloneboy.bigdata.businessanalysis.commons.common.Constants
 import com.cycloneboy.bigdata.businessanalysis.commons.conf.ConfigurationManager
 import com.cycloneboy.bigdata.businessanalysis.commons.utils.DateUtils
@@ -15,7 +15,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.streaming.dstream.{DStream, InputDStream}
 import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
-import org.apache.spark.streaming.{Seconds, StreamingContext}
+import org.apache.spark.streaming.{Minutes, Seconds, StreamingContext}
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -83,8 +83,53 @@ object AdClickRealTimeStatApp {
     // 业务功能三：实时统计每天每个省份top3热门广告
     calculateProvinceTop3Ad(spark, adRealTimeStatDStream)
 
+
+    // 业务功能四：实时统计每天每个广告在最近1小时的滑动窗口内的点击趋势（每分钟的点击量）
+    calculateAdClickCountByWindow(adRealTimeValueDStream)
+
     ssc.start()
     ssc.awaitTermination()
+  }
+
+  /**
+   * 业务功能四：计算最近1小时滑动窗口内的广告点击趋势
+   *
+   * @param adRealTimeValueDStream
+   */
+  def calculateAdClickCountByWindow(adRealTimeValueDStream: DStream[String]) = {
+    val pairDStream: DStream[(String, Long)] = adRealTimeValueDStream.map { case consumerRecord =>
+      val logSplited = consumerRecord.split(" ")
+      val timeMinute = DateUtils.formatTimeMinute(new Date(logSplited(0).toLong))
+      val adid = logSplited(4).toLong
+
+      (timeMinute + "_" + adid, 1L)
+    }
+
+    // 计算窗口函数，1小时滑动窗口内的广告点击趋势
+    val aggrRDD: DStream[(String, Long)] = pairDStream.reduceByKeyAndWindow((a: Long, b: Long) => (a + b), Minutes(60L), Seconds(10L))
+
+    aggrRDD.foreachRDD { rdd =>
+      rdd.foreachPartition { items =>
+        val adClickTrends = ArrayBuffer[AdClickTrend]()
+
+        for (item <- items) {
+          val keySplited = item._1.split("_")
+
+          // yyyyMMddHHmm
+          val dateMinute = keySplited(0)
+          val adid = keySplited(1).toLong
+          val clickCount = item._2
+
+          val date = DateUtils.formatDate(DateUtils.parseDateKey(dateMinute.substring(0, 8)))
+          val hour = dateMinute.substring(8, 10)
+          val minute = dateMinute.substring(10)
+
+          adClickTrends += AdClickTrend(date, hour, minute, adid, clickCount)
+        }
+        AdClickTrendDao.updateBatch(adClickTrends.toArray)
+      }
+    }
+
   }
 
   /**
