@@ -22,6 +22,8 @@ import scala.collection.mutable.ArrayBuffer
 /**
  *
  * Create by  sl on 2019-11-28 14:15
+ *
+ * 需求6和需求8 有点小问题
  */
 object AdClickRealTimeStatApp {
 
