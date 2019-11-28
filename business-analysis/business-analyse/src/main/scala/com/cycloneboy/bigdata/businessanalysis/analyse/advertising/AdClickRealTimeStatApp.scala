@@ -3,8 +3,8 @@ package com.cycloneboy.bigdata.businessanalysis.analyse.advertising
 import java.lang
 import java.util.{Date, UUID}
 
-import com.cycloneboy.bigdata.businessanalysis.analyse.dao.{AdBlackListDao, AdStatDao, AdUserClickCountDao}
-import com.cycloneboy.bigdata.businessanalysis.analyse.model.{AdBlacklist, AdStat, AdUserClickCount}
+import com.cycloneboy.bigdata.businessanalysis.analyse.dao.{AdBlackListDao, AdProvinceTop3Dao, AdStatDao, AdUserClickCountDao}
+import com.cycloneboy.bigdata.businessanalysis.analyse.model.{AdBlacklist, AdProvinceTop3, AdStat, AdUserClickCount}
 import com.cycloneboy.bigdata.businessanalysis.commons.common.Constants
 import com.cycloneboy.bigdata.businessanalysis.commons.conf.ConfigurationManager
 import com.cycloneboy.bigdata.businessanalysis.commons.utils.DateUtils
@@ -80,10 +80,108 @@ object AdClickRealTimeStatApp {
     // 业务功能二：计算广告点击流量实时统计结果（yyyyMMdd_province_city_adid,clickCount）
     val adRealTimeStatDStream: DStream[(String, Long)] = calculateRealTimeStat(filteredAdRealTimeLogDStream)
 
+    // 业务功能三：实时统计每天每个省份top3热门广告
+    calculateProvinceTop3Ad(spark, adRealTimeStatDStream)
+
     ssc.start()
     ssc.awaitTermination()
   }
 
+  /**
+   * 业务功能三：计算每天各省份的top3热门广告
+   *
+   * @param spark
+   * @param adRealTimeStatDStream
+   */
+  def calculateProvinceTop3Ad(spark: SparkSession, adRealTimeStatDStream: DStream[(String, Long)]) = {
+
+    // 每一个batch rdd，都代表了最新的全量的每天各省份各城市各广告的点击量
+    val rowsDStream = adRealTimeStatDStream.transform { rdd =>
+
+      // <yyyyMMdd_province_city_adid, clickCount>
+      // <yyyyMMdd_province_adid, clickCount>
+
+      // 计算出每天各省份各广告的点击量
+      val mappedRDD: RDD[(String, Long)] = rdd.map { case (keyString, count) =>
+        val keySplited = keyString.split("_")
+
+        val date = keySplited(0)
+        val province = keySplited(1)
+        val adid = keySplited(3).toLong
+        val clickCount = count
+
+        val key = date + "_" + province + "_" + adid
+        (key, clickCount)
+      }
+
+      val dailyAdClickCountByProvinceRDD: RDD[(String, Long)] = mappedRDD.reduceByKey(_ + _)
+      // 将dailyAdClickCountByProvinceRDD转换为DataFrame
+      // 注册为一张临时表
+      // 使用Spark SQL，通过开窗函数，获取到各省份的top3热门广告
+
+      val rowsRDD: RDD[AdProvinceTop3] = dailyAdClickCountByProvinceRDD.map { case (keyString, count) =>
+
+        val keySplited = keyString.split("_")
+
+        val datekey = keySplited(0)
+        val province = keySplited(1)
+        val adid = keySplited(2).toLong
+        val clickCount = count
+
+        val date = DateUtils.formatDate(DateUtils.parseDateKey(datekey))
+        AdProvinceTop3(date, province, adid, clickCount)
+        //        (date, province, adid, clickCount)
+      }
+
+      rowsRDD
+      //      import spark.implicits._
+      //      val dailyAdClickCountByProvinceDF: DataFrame = rowsRDD.toDF("date", "province", "ad_id", "click_count")
+      //      // 将dailyAdClickCountByProvinceDF，注册成一张临时表
+      //      dailyAdClickCountByProvinceDF.createOrReplaceTempView("tmp_daily_ad_click_count_by_prov")
+      //
+      //      import spark.implicits._
+      //      val provinceTop3RDD: Dataset[AdProvinceTop3] = spark.sql("select date,province,ad_id as adid ," +
+      //        "click_count as clickCount from tmp_daily_ad_click_count_by_prov").as[AdProvinceTop3]
+      //      provinceTop3RDD.rdd
+      //
+      //
+      //      // 使用Spark SQL执行SQL语句，配合开窗函数，统计出各身份top3热门的广告
+      //      val provinceTop3AdDF: DataFrame = spark.sql("select date,province,ad_id,click_count " +
+      //        " from  (" +
+      //        " select date,province,ad_id,click_count," +
+      //        " row_number() over(partition by province order by click_count desc) rank " +
+      //        " from tmp_daily_ad_click_count_by_prov " +
+      //        ") t " +
+      //        " where rank<=3"
+      //      )
+      //
+      //      provinceTop3AdDF.rdd
+    }
+
+    rowsDStream.print(5)
+
+
+    //        spark.sql("select * from tmp_daily_ad_click_count_by_prov").show(5)
+
+    // 每次都是刷新出来各个省份最热门的top3广告，将其中的数据批量更新到MySQL中
+    rowsDStream.foreachRDD { rdd =>
+      rdd.foreachPartition { items =>
+
+        val adProvinceTop3s = ArrayBuffer[AdProvinceTop3]()
+
+        for (item <- items) {
+          val date = item.date
+          val province = item.province
+          val adid = item.adid
+          val clickCount = item.clickCount
+          adProvinceTop3s += AdProvinceTop3(date, province, adid, clickCount)
+        }
+
+        AdProvinceTop3Dao.updateBatch(adProvinceTop3s.toArray)
+      }
+    }
+
+  }
 
   /**
    * 业务功能二：计算广告点击流量实时统计
