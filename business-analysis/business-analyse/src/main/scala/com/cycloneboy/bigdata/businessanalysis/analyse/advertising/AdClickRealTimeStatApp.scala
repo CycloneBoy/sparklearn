@@ -3,8 +3,8 @@ package com.cycloneboy.bigdata.businessanalysis.analyse.advertising
 import java.lang
 import java.util.{Date, UUID}
 
-import com.cycloneboy.bigdata.businessanalysis.analyse.dao.{AdBlackListDao, AdUserClickCountDao}
-import com.cycloneboy.bigdata.businessanalysis.analyse.model.{AdBlacklist, AdUserClickCount}
+import com.cycloneboy.bigdata.businessanalysis.analyse.dao.{AdBlackListDao, AdStatDao, AdUserClickCountDao}
+import com.cycloneboy.bigdata.businessanalysis.analyse.model.{AdBlacklist, AdStat, AdUserClickCount}
 import com.cycloneboy.bigdata.businessanalysis.commons.common.Constants
 import com.cycloneboy.bigdata.businessanalysis.commons.conf.ConfigurationManager
 import com.cycloneboy.bigdata.businessanalysis.commons.utils.DateUtils
@@ -74,17 +74,102 @@ object AdClickRealTimeStatApp {
     // 根据动态黑名单进行数据过滤 (userid, timestamp province city userid adid)
     val filteredAdRealTimeLogDStream: DStream[(Long, String)] = fliterByBlacklist(spark, adRealTimeValueDStream)
 
-    println("---------filteredAdRealTimeLogDStream--------")
-    filteredAdRealTimeLogDStream.print(3)
-    println("-----------------")
-
     // 业务功能一：生成动态黑名单
     generateDynamicBlacklist(filteredAdRealTimeLogDStream)
+
+    // 业务功能二：计算广告点击流量实时统计结果（yyyyMMdd_province_city_adid,clickCount）
+    val adRealTimeStatDStream: DStream[(String, Long)] = calculateRealTimeStat(filteredAdRealTimeLogDStream)
 
     ssc.start()
     ssc.awaitTermination()
   }
 
+
+  /**
+   * 业务功能二：计算广告点击流量实时统计
+   *
+   * @param filteredAdRealTimeLogDStream
+   */
+  def calculateRealTimeStat(filteredAdRealTimeLogDStream: DStream[(Long, String)]) = {
+    // 计算每天各省各城市各广告的点击量
+    // 设计出来几个维度：日期、省份、城市、广告
+    // 2015-12-01，当天，可以看到当天所有的实时数据（动态改变），比如江苏省南京市
+    // 广告可以进行选择（广告主、广告名称、广告类型来筛选一个出来）
+    // 拿着date、province、city、adid，去mysql中查询最新的数据
+    // 等等，基于这几个维度，以及这份动态改变的数据，是可以实现比较灵活的广告点击流量查看的功能的
+
+    // date province city userid adid
+    // date_province_city_adid，作为key；1作为value
+    // 通过spark，直接统计出来全局的点击次数，在spark集群中保留一份；在mysql中，也保留一份
+    // 我们要对原始数据进行map，映射成<date_province_city_adid,1>格式
+    // 然后呢，对上述格式的数据，执行updateStateByKey算子
+    // spark streaming特有的一种算子，在spark集群内存中，维护一份key的全局状态
+    val mappedDStream: DStream[(String, Long)] = filteredAdRealTimeLogDStream.map { case (userid, log) =>
+      val logSplited = log.split(" ")
+      val timestamp = logSplited(0)
+      val date = new Date(timestamp.toLong)
+      val datekey = DateUtils.formatDateKey(date)
+
+      val province = logSplited(1)
+      val city = logSplited(2)
+      val adid = logSplited(4)
+
+
+      val key = datekey + "_" + province + "_" + city + "_" + adid
+      (key, 1L)
+    }
+
+    // 在这个dstream中，就相当于，有每个batch rdd累加的各个key（各天各省份各城市各广告的点击次数）
+    // 每次计算出最新的值，就在aggregatedDStream中的每个batch rdd中反应出来
+    val aggregatedDStream: DStream[(String, Long)] = mappedDStream.updateStateByKey[Long] { (values: Seq[Long], old: Option[Long]) =>
+      // 举例来说
+      // 对于每个key，都会调用一次这个方法
+      // 比如key是<20151201_Jiangsu_Nanjing_10001,1>，就会来调用一次这个方法7
+      // 10个
+
+      // values，(1,1,1,1,1,1,1,1,1,1)
+
+      // 首先根据optional判断，之前这个key，是否有对应的状态
+      var clickCount = 0L
+
+      if (old.isDefined) {
+        clickCount = old.get
+      }
+
+      for (value <- values) {
+        clickCount += value
+      }
+
+      Some(clickCount)
+    }
+
+    // 将计算出来的最新结果，同步一份到mysql中，以便于j2ee系统使用
+    aggregatedDStream.foreachRDD { rdd =>
+
+      rdd.foreachPartition { items =>
+
+        val adStats = ArrayBuffer[AdStat]()
+
+        for (item <- items) {
+          val keySplited = item._1.split("_")
+          // yyyy-MM-dd
+          val date = keySplited(0)
+          val province = keySplited(1)
+          val city = keySplited(2)
+          val adid = keySplited(3).toLong
+
+          val clickCount = item._2
+
+          // 批量插入
+          adStats += AdStat(date, province, city, adid, clickCount)
+        }
+
+        AdStatDao.updateBatch(adStats.toArray)
+      }
+    }
+
+    aggregatedDStream
+  }
 
   /**
    * 生成动态黑名单
@@ -107,11 +192,6 @@ object AdClickRealTimeStatApp {
       val key = datekey + "_" + userid + "_" + adid
       (key, 1L)
     }
-
-    println("---------dailyUserAdClickDStream--------")
-    dailyUserAdClickDStream.print(3)
-    println("-----------------")
-
 
     val dailyUserAdClickCountDStream: DStream[(String, Long)] = dailyUserAdClickDStream.reduceByKey(_ + _)
 
@@ -139,10 +219,6 @@ object AdClickRealTimeStatApp {
       }
     }
 
-    println("---------dailyUserAdClickCountDStream--------")
-    dailyUserAdClickCountDStream.print(3)
-    println("-----------------")
-
     val adBlacklistCountMax = ConfigurationManager.config.getInt(Constants.CONF_AD_BLACK_LIST_FILTER_MAX)
 
     // 现在我们在mysql里面，已经有了累计的每天各用户对各广告的点击量
@@ -166,9 +242,6 @@ object AdClickRealTimeStatApp {
       }
     }
 
-    println("---------blacklistDStream--------")
-    blacklistDStream.print(3)
-    println("-----------------")
 
     // blacklistDStream
     // 里面的每个batch，其实就是都是过滤出来的已经在某天对某个广告点击量超过100的用户
@@ -186,15 +259,8 @@ object AdClickRealTimeStatApp {
     // 实际上，是要通过对dstream执行操作，对其中的rdd中的userid进行全局的去重, 返回Userid
     val blacklistUseridDStream: DStream[Long] = blacklistDStream.map(item => item._1.split("_")(1).toLong)
     //    ProcessUtils.printRDD(blacklistUseridDStream)
-    println("---------blacklistUseridDStream--------")
-    blacklistUseridDStream.print(3)
-    println("-----------------")
-
 
     val distinctBlacklistUseridDStream: DStream[Long] = blacklistUseridDStream.transform(useridStream => useridStream.distinct())
-    println("---------distinctBlacklistUseridDStream--------")
-    distinctBlacklistUseridDStream.print(3)
-    println("-----------------")
 
     // 到这一步为止，distinctBlacklistUseridDStream
     // 每一个rdd，只包含了userid，而且还进行了全局的去重，保证每一次过滤出来的黑名单用户都没有重复的

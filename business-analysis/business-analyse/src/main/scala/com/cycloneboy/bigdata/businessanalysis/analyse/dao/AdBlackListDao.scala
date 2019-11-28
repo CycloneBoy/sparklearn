@@ -35,8 +35,8 @@ object AdBlackListDao {
     client.executeBatch(sql, paramsList.toArray)
 
     println("--------------------AdBlackListDao.insertBatch------------------------")
-    adBlackLists.foreach(println(_))
-    println("----------------------------------------------------------------------")
+    //    adBlackLists.foreach(println(_))
+    //    println("----------------------------------------------------------------------")
     mySqlPool.returnObject(client)
   }
 
