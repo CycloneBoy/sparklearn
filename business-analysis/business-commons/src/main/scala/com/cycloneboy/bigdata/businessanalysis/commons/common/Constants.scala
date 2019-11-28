@@ -110,4 +110,10 @@ object Constants {
   val STEP_PERIOD_10_30 = "10_30"
   val STEP_PERIOD_30_60 = "30_60"
   val STEP_PERIOD_60 = "60"
+
+  /**
+   * 表名称
+   */
+  val TABLE_USER_VISIT_ACTION = "user_visit_action"
+  val TABLE_PRODUCT_INFO = "product_info"
 }
