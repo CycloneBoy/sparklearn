@@ -15,6 +15,7 @@ import org.apache.kafka.clients.producer.{KafkaProducer, ProducerConfig, Produce
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
+
 object MockRealTimeData {
 
   /**
@@ -67,6 +68,7 @@ object MockRealTimeData {
     //    val broker = ConfigurationManager.config.getString("kafka.broker.list")
     //    val topic = ConfigurationManager.config.getString("kafka.topics")
 
+
     val topic = "spark"
     val broker = "localhost:9092"
 
@@ -79,6 +81,7 @@ object MockRealTimeData {
         kafkaProducer.send(new ProducerRecord[String, String](topic, item))
       }
       Thread.sleep(5000)
+
     }
   }
 }

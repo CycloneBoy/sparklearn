@@ -13,7 +13,13 @@ import org.apache.kafka.common.serialization.StringDeserializer
  */
 object ScalaComsumerExample {
 
-
+  /**
+   * 创建消费者
+   *
+   * @param broker
+   * @param group
+   * @return
+   */
   def createKafkaConsumer(broker: String, group: String): KafkaConsumer[String, String] = {
 
     // 创建配置对象
