@@ -1,0 +1,45 @@
+ /*
+        1.hadooop 调用 hbase api 执行 mr
+            export HADOOP_CLASSPATH=`${HBASE_HOME}/bin/hbase mapredcp`
+
+             -- 案例一：统计Student表中有多少行数据
+             $HADOOP_HOME/bin/yarn jar lib/hbase-server-1.4.11.jar rowcounter student2
+
+            yarn jar /Users/huhao/software/cdh-2.5.0-5.3.6/hbase-0.98.6-cdh5.3.6/lib/hbase-server-0.98.6-cdh5.3.6.jar rowcounter "china_tele:call_log"
+            等效于 hbase org.apache.hadoop.hbase.mapreduce.RowCounter 'china_tele:call_log'
+
+        2. tsv 文件导入 hbase表
+            vim fruit.tsv
+            --------------------------------
+            1001    Apple   Red
+            1002    Pear    Yellow
+            1003    Pineapple       Yellow
+            --------------------------------
+
+            hdfs dfs -put fruit.tsv /tmp
+
+            hbase-shell> createt 'fruit' 'info'
+
+            yarn jar lib/hbase-server-1.4.11.jar  importtsv -Dimporttsv.colunfo:name,info:color fruit hdfs://localhost:9000/input_fruit
+
+
+
+            hbase-shell> scan 'fruit'
+            ROW                                             COLUMN+CELL
+             1001                                           column=info:color, timestamp=1528869871893, value=Red
+             1001                                           column=info:name, timestamp=1528869871893, value=Apple
+             1002                                           column=info:color, timestamp=1528869871893, value=Yellow
+             1002                                           column=info:name, timestamp=1528869871893, value=Pear
+             1003                                           column=info:color, timestamp=1528869871893, value=Yellow
+             1003                                           column=info:name, timestamp=1528869871893, value=Pineapple
+            3 row(s) in 0.3190 seconds
+
+     */
+
+
+-- 案例一：统计Student表中有多少行数据
+$HADOOP_HOME/bin/yarn jar lib/hbase-server-1.4.11.jar rowcounter student2
+
+ -- 案例二：使用MapReduce将本地数据导入到HBase
+ yarn jar lib/hbase-server-1.4.11.jar  importtsv -Dimporttsv.colunfo:name,info:color fruit hdfs://localhost:9000/input_fruit
+
