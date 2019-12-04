@@ -28,6 +28,7 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.NamespaceDescriptor;
+import org.apache.hadoop.hbase.NamespaceNotFoundException;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
@@ -73,26 +74,22 @@ public class WeiboUtils {
 
       admin = (HBaseAdmin) connection.getAdmin();
 
-      //      // 判断是否存在此namespace
-      //      boolean existNameSpaceflag = false;
-      //      try {
-      //        admin.getNamespaceDescriptor(NAMESPACE_WEIBO);
-      //      } catch (IOException e) {
-      //        e.printStackTrace();
-      //        existNameSpaceflag = true;
-      //      }
-      //      if (existNameSpaceflag) {
-      //        return;
-      //      }
+      // 判断是否存在此namespace
+      try {
+        admin.getNamespaceDescriptor(NAMESPACE_WEIBO);
+      } catch (NamespaceNotFoundException e) {
+        e.printStackTrace();
 
-      NamespaceDescriptor weibo =
-          NamespaceDescriptor.create(NAMESPACE_WEIBO)
-              .addConfiguration("creator", "sl")
-              .addConfiguration("create_time", System.currentTimeMillis() + "")
-              .build();
+        NamespaceDescriptor weibo =
+            NamespaceDescriptor.create(NAMESPACE_WEIBO)
+                .addConfiguration("creator", "sl")
+                .addConfiguration("create_time", System.currentTimeMillis() + "")
+                .build();
 
-      admin.createNamespace(weibo);
-      log.info("初始化命名空间");
+        admin.createNamespace(weibo);
+        log.info("初始化命名空间");
+      }
+
     } catch (IOException e) {
       e.printStackTrace();
     } finally {

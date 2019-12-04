@@ -3,23 +3,31 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>com.cycloneboy.bigdata</groupId>
-    <artifactId>business-analysis</artifactId>
+    <artifactId>communicaton-analysis</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>com.cycloneboy.bigdata.businessanalysis</groupId>
-  <artifactId>commons</artifactId>
+  <groupId>com.cycloneboy.bigdata.communication</groupId>
+  <artifactId>communication-consumer</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>business-commons</name>
-  <description>commons for businessanalysis</description>
+  <name>communication-consumer</name>
+  <description>communication-consumer</description>
 
   <properties>
     <java.version>1.8</java.version>
   </properties>
 
   <dependencies>
+
+    <dependency>
+      <groupId>com.cycloneboy.bigdata.communication</groupId>
+      <artifactId>communication-common</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-configuration2</artifactId>
@@ -50,9 +58,15 @@
     </dependency>
 
     <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
+      <groupId>org.apache.hbase</groupId>
+      <artifactId>hbase-shaded-client</artifactId>
+      <version>${hbase.version}</version>
     </dependency>
+
+        <dependency>
+          <groupId>mysql</groupId>
+          <artifactId>mysql-connector-java</artifactId>
+        </dependency>
 
     <dependency>
       <groupId>com.alibaba</groupId>
@@ -64,6 +78,71 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
 
+    <!-- hadoop 依赖-->
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-common</artifactId>
+      <version>${hadoop.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-client</artifactId>
+      <version>${hadoop.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-hdfs</artifactId>
+      <version>${hadoop.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>jdk.tools</groupId>
+      <artifactId>jdk.tools</artifactId>
+      <version>jdk1.8.0_212</version>
+      <scope>system</scope>
+      <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.hbase</groupId>
+      <artifactId>hbase-server</artifactId>
+      <version>${hbase.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.hbase</groupId>
+      <artifactId>hbase-client</artifactId>
+      <version>${hbase.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.hbase</groupId>
+      <artifactId>hbase-common</artifactId>
+      <version>${hbase.version}</version>
+    </dependency>
+
+
+    <!-- hbase 本地运行必须-->
+    <dependency>
+      <groupId>commons-configuration</groupId>
+      <artifactId>commons-configuration</artifactId>
+      <version>1.6</version>
+    </dependency>
+
+
+    <!-- kafka -->
+
+    <!--    <dependency>-->
+    <!--      <groupId>org.apache.kafka</groupId>-->
+    <!--      <artifactId>kafka_${scala.version}</artifactId>-->
+    <!--      <version>${kafka.client.version}</version>-->
+    <!--    </dependency>-->
+
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
+      <version>${kafka.client.version}</version>
+    </dependency>
 
   </dependencies>
 
@@ -105,5 +184,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>

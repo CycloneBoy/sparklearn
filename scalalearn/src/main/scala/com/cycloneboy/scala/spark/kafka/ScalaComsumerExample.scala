@@ -36,7 +36,8 @@ object ScalaComsumerExample {
   }
 
   def main(args: Array[String]): Unit = {
-    val topic = "spark"
+    //    val topic = "spark"
+    val topic = "calllog"
     val broker = "localhost:9092"
 
     // 创建Kafka消费者

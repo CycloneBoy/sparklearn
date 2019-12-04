@@ -17,6 +17,7 @@
     <module>hivelearn</module>
     <module>flumelearn</module>
     <module>business-analysis</module>
+    <module>communicaton-analysis</module>
   </modules>
 
 
@@ -24,6 +25,8 @@
     <java.version>1.8</java.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compile.version>3.6.1</maven.compile.version>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -298,6 +301,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
+        <version>3.1.0</version>
         <configuration>
           <encoding>UTF-8</encoding>
         </configuration>
