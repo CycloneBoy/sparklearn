@@ -152,6 +152,7 @@ public class LogProducer {
 
   public static void main(String[] args) {
     LogProducer logProducer = new LogProducer();
+    logProducer.initPhone();
 
     String filePath;
     Integer perSecondSize;
@@ -168,7 +169,6 @@ public class LogProducer {
       perSecondSize = Integer.parseInt(args[1]);
     }
 
-    logProducer.initPhone();
     logProducer.writeLog(filePath, perSecondSize);
   }
 }

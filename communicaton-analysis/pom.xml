@@ -42,6 +42,8 @@
 
     <apache.common.pool2.version>2.4.2</apache.common.pool2.version>
     <springboot.version>2.2.1.RELEASE</springboot.version>
+
+    <hbase.version>1.4.11</hbase.version>
   </properties>
 
   <!-- 声明并引入子项目共有的依赖 -->

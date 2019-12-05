@@ -52,6 +52,8 @@ public class HBaseConsumer {
     while (true) {
       ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(100));
       for (ConsumerRecord<String, String> record : records) {
+
+        // 插入数据到hbase中
         hBaseDao.put(record.value());
 
         log.info(

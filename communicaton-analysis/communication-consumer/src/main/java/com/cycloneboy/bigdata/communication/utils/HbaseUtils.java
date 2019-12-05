@@ -141,7 +141,8 @@ public class HbaseUtils {
     }
 
     // 添加协处理器
-    descriptor.addCoprocessor("com.cycloneboy.bigdata.communication.hbase.CalleeWriteObserver");
+    //
+    // descriptor.addCoprocessor("com.cycloneboy.bigdata.communication.hbase.CalleeWriteObserver");
     // 根据对表的配置，创建表
     admin.createTable(descriptor, getSplitKey(regions));
     log.info("表 {} 创建成功! ", tableName);

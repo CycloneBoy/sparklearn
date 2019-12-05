@@ -85,5 +85,14 @@ public class HBaseDaoTest {
         hBaseDao.getStartStopRowkeys("13018001222", "201810", "201903");
 
     startStopRowkeys.forEach(row -> log.info("{} - {}", row[0], row[1]));
+
+    startStopRowkeys = hBaseDao.getStartStopRowkeys("13018001222", "20181004", "20190305");
+
+    startStopRowkeys.forEach(row -> log.info("{} - {}", row[0], row[1]));
+
+    startStopRowkeys =
+        hBaseDao.getStartStopRowkeys("13018001222", "20181004120300", "20190314120300");
+
+    startStopRowkeys.forEach(row -> log.info("{} - {}", row[0], row[1]));
   }
 }

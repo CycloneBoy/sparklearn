@@ -34,6 +34,9 @@ public class HBaseDao {
   private static String tableName;
   private static String columnFamily;
   private static String callerFamily;
+  private static String calleeFamily;
+  private static String callerFlag;
+  private static String calleeFlag;
 
   public static Configuration conf;
   private Table table;
@@ -52,6 +55,15 @@ public class HBaseDao {
     columnFamily = ConfigurationManager.config().getString(Constants.CONF_HBASE_CALLLOG_FAMILIES());
     callerFamily =
         ConfigurationManager.config().getString(Constants.CONF_HBASE_CALLLOG_CALLER_FAMILY());
+
+    calleeFamily =
+        ConfigurationManager.config().getString(Constants.CONF_HBASE_CALLLOG_CALLEE_FAMILY());
+
+    callerFlag =
+        ConfigurationManager.config().getString(Constants.CONF_HBASE_CALLLOG_CALLER_FLAG());
+
+    calleeFlag =
+        ConfigurationManager.config().getString(Constants.CONF_HBASE_CALLLOG_CALLEE_FLAG());
   }
 
   public HBaseDao() {
@@ -150,6 +162,15 @@ public class HBaseDao {
    */
   public void put(CallLog callLog) {
     put(callerFamily, callLog);
+    // 添加被叫用户数据
+    String caller = callLog.getCaller();
+    String callee = callLog.getCallee();
+    // 交换主被叫号码编号和通话的标志位
+    callLog.setCaller(callee);
+    callLog.setCallee(caller);
+    callLog.setFlag(calleeFlag);
+
+    put(calleeFamily, callLog);
   }
 
   /**
@@ -210,31 +231,58 @@ public class HBaseDao {
   }
 
   /**
-   * 获取查询时间范围内的startRow和stopRow
+   * 按年月获取查询时间范围内的startRow和stopRow
    *
-   * @param phone
-   * @param start yyyyMM
-   * @param end
-   * @return
+   * @param phone 用户手机号 (11位长度)
+   * @param start yyyyMM 或者 yyyyMMdd 或者 yyyyMMddHHmmss
+   * @param end yyyyMM 或者yyyyMMdd 或者 yyyyMMddHHmmss
+   * @return 查询范围的rowkey列表
    */
   public List<String[]> getStartStopRowkeys(String phone, String start, String end) {
     List<String[]> rowkeyList = new ArrayList<>();
+    // 参数检查
+    if (StringUtils.isEmpty(phone)
+        || phone.length() < 11
+        || StringUtils.isEmpty(start)
+        || start.length() < 6
+        || StringUtils.isEmpty(end)
+        || end.length() < 6) return rowkeyList;
 
+    String dateTimeFormat = "yyyyMM";
     String startTime = start.substring(0, 6);
     String endTime = end.substring(0, 6);
 
+    if (start.length() == 8 && end.length() == 8) {
+      // 处理输入的查询时间范围包括天(yyyyMMdd
+      dateTimeFormat = "yyyyMMdd";
+      startTime = start.substring(0, 8);
+      endTime = end.substring(0, 8);
+    } else if (start.length() == 14 && end.length() == 14) {
+      // 处理输入的查询时间范围包括小时(yyyyMMddHHmmss)
+      dateTimeFormat = "yyyyMMddHHmmss";
+      startTime = start.substring(0, 14);
+      endTime = end.substring(0, 14);
+    }
+
     Calendar startCalendar = Calendar.getInstance();
-    startCalendar.setTime(DateUtils.parse(startTime, "yyyyMM"));
+    startCalendar.setTime(DateUtils.parse(startTime, dateTimeFormat));
 
     Calendar endCalendar = Calendar.getInstance();
-    endCalendar.setTime(DateUtils.parse(endTime, "yyyyMM"));
+    endCalendar.setTime(DateUtils.parse(endTime, dateTimeFormat));
+
+    if (endCalendar.getTimeInMillis() < startCalendar.getTimeInMillis()) return rowkeyList;
 
     while (startCalendar.getTimeInMillis() <= endCalendar.getTimeInMillis()) {
       // 当前时间
-      String nowTime = DateUtils.formatDateTime(startCalendar.getTime(), "yyyyMM");
+      String nowTime = DateUtils.formatDateTime(startCalendar.getTime(), dateTimeFormat);
 
       String regionCode = HbaseUtils.getRegionCode(phone, nowTime, regions);
-      String startRow = regionCode + "_" + phone + "_" + nowTime;
+      String startRow =
+          regionCode
+              + Constants.DELIMITER_UNDERLINE()
+              + phone
+              + Constants.DELIMITER_UNDERLINE()
+              + nowTime;
       String endRow = startRow + "|";
       String[] rowkey = {startRow, endRow};
       rowkeyList.add(rowkey);
