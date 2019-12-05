@@ -74,6 +74,13 @@ SQL 和 Spark Streaming，进行离线计算和实时计算业务模块的开发
    
 ## hbaselearn HBase学习
     + CRUD JAVA API 例子
+### 微博小案例-hase-api
+
+### 通信云服务-运营数据分析 
+    业务指标：
+    a) 用户每天主叫通话个数统计，通话时间统计。
+    b) 用户每月通话记录统计，通话时间统计。
+    c) 用户之间亲密关系统计。（通话次数与通话时间体现用户亲密关系）
    
 ## hadoop hadoop的学习
 + 添加hadoop/ hdfs的读写

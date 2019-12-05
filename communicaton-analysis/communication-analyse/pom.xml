@@ -14,14 +14,153 @@
   <artifactId>communication-analyse</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>communication-analyse</name>
-  <description>Demo project for Spring Boot</description>
+  <description>communication-analyse 数据分析</description>
 
   <properties>
     <java.version>1.8</java.version>
+    <!-- hadoop hive hbase spark  -->
+    <hadoop.version>2.7.2</hadoop.version>
+    <hive.version>2.3.6</hive.version>
+    <hbase.version>1.4.11</hbase.version>
   </properties>
 
   <dependencies>
+    <!--    <dependency>-->
+    <!--      <groupId>org.glassfish</groupId>-->
+    <!--      <artifactId>javax.el</artifactId>-->
+    <!--      <version>3.0.1-b11</version>-->
+    <!--    </dependency>-->
 
+
+    <dependency>
+      <groupId>com.cycloneboy.bigdata.communication</groupId>
+      <artifactId>communication-common</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-configuration2</artifactId>
+      <version>2.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <version>2.4</version>
+      <classifier>jdk15</classifier>
+    </dependency>
+
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <version>1.9.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-pool2</artifactId>
+    </dependency>
+
+
+    <!-- mysql 依赖-->
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>fastjson</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+
+    <!-- hadoop 依赖-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.apache.hadoop</groupId>-->
+    <!--      <artifactId>hadoop-common</artifactId>-->
+    <!--      <version>${hadoop.version}</version>-->
+    <!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.apache.hadoop</groupId>-->
+    <!--      <artifactId>hadoop-client</artifactId>-->
+    <!--      <version>${hadoop.version}</version>-->
+    <!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.apache.hadoop</groupId>-->
+    <!--      <artifactId>hadoop-hdfs</artifactId>-->
+    <!--      <version>${hadoop.version}</version>-->
+    <!--    </dependency>-->
+
+    <dependency>
+      <groupId>jdk.tools</groupId>
+      <artifactId>jdk.tools</artifactId>
+      <version>jdk1.8.0_212</version>
+      <scope>system</scope>
+      <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
+    </dependency>
+
+    <!-- hbase 依赖-->
+    <dependency>
+      <groupId>org.apache.hbase</groupId>
+      <artifactId>hbase-server</artifactId>
+      <version>${hbase.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.hbase</groupId>
+      <artifactId>hbase-client</artifactId>
+      <version>${hbase.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.hbase</groupId>
+      <artifactId>hbase-common</artifactId>
+      <version>${hbase.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.hbase</groupId>
+      <artifactId>hbase-shaded-client</artifactId>
+      <version>${hbase.version}</version>
+    </dependency>
+
+    <!-- hbase 本地运行必须-->
+    <dependency>
+      <groupId>commons-configuration</groupId>
+      <artifactId>commons-configuration</artifactId>
+      <version>1.6</version>
+    </dependency>
+
+    <!-- hive 本地运行必须-->
+    <dependency>
+      <groupId>org.apache.hive</groupId>
+      <artifactId>hive-exec</artifactId>
+      <version>${hive.version}</version>
+    </dependency>
+
+    <!-- kafka -->
+
+    <!--    <dependency>-->
+    <!--      <groupId>org.apache.kafka</groupId>-->
+    <!--      <artifactId>kafka_${scala.version}</artifactId>-->
+    <!--      <version>${kafka.client.version}</version>-->
+    <!--    </dependency>-->
+
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
+      <version>${kafka.client.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
