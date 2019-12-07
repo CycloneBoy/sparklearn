@@ -1,14 +1,12 @@
-package com.cycloneboy.bigdata.communication.runner;
+package com.cycloneboy.bigdata.hbaselearn.calllog;
 
-import com.cycloneboy.bigdata.communication.converter.MysqlOutputFormat;
-import com.cycloneboy.bigdata.communication.kv.key.ComDimension;
-import com.cycloneboy.bigdata.communication.kv.value.CountCallDurationValue;
-import com.cycloneboy.bigdata.communication.mapper.CountCallDurationMapper;
-import com.cycloneboy.bigdata.communication.reducer.CountCallDurationReducer;
+import com.cycloneboy.bigdata.hbaselearn.calllog.kv.key.ComDimension;
+import com.cycloneboy.bigdata.hbaselearn.calllog.kv.value.CountCallDurationValue;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
@@ -18,6 +16,7 @@ import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
@@ -29,14 +28,14 @@ import org.apache.hadoop.util.ToolRunner;
 @Slf4j
 public class CountCallDurationMRRunner extends Configured implements Tool {
 
-  private static Configuration conf;
-
-  static {
-    // 使用HBaseConfiguration的单例方法实例化
-    conf = HBaseConfiguration.create();
-    conf.set("hbase.zookeeper.quorum", "localhost");
-    conf.set("hbase.zookeeper.property.clientPort", "2181");
-  }
+  //  private static Configuration conf;
+  //
+  //  static {
+  //    // 使用HBaseConfiguration的单例方法实例化
+  //    conf = HBaseConfiguration.create();
+  //    conf.set("hbase.zookeeper.quorum", "localhost");
+  //    conf.set("hbase.zookeeper.property.clientPort", "2181");
+  //  }
 
   /**
    * 初始化mapper
@@ -109,12 +108,12 @@ public class CountCallDurationMRRunner extends Configured implements Tool {
     job.setReducerClass(CountCallDurationReducer.class);
     job.setOutputKeyClass(ComDimension.class);
     job.setOutputValueClass(CountCallDurationValue.class);
-    job.setOutputFormatClass(MysqlOutputFormat.class);
+    //    job.setOutputFormatClass(MysqlOutputFormat.class);
 
     //    job.setNumReduceTasks(1);
 
-    //    Path path = new Path("hdfs://localhost:9000/calllog2");
-    //    FileOutputFormat.setOutputPath(job, path);
+    Path path = new Path("hdfs://localhost:9000/calllog1");
+    FileOutputFormat.setOutputPath(job, path);
 
     boolean result = job.waitForCompletion(true);
     if (result) {
@@ -128,7 +127,7 @@ public class CountCallDurationMRRunner extends Configured implements Tool {
 
   public static void main(String[] args) throws Exception {
 
-    //    Configuration conf = HBaseConfiguration.create();
+    Configuration conf = HBaseConfiguration.create();
 
     int status = ToolRunner.run(conf, new CountCallDurationMRRunner(), args);
     System.exit(status);

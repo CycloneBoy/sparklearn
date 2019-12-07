@@ -21,7 +21,7 @@ public class KVTextDriver {
       throws IOException, ClassNotFoundException, InterruptedException {
     Configuration conf = new Configuration();
     // 设置切割符
-    conf.set(KeyValueLineRecordReader.KEY_VALUE_SEPARATOR, " ");
+    conf.set(KeyValueLineRecordReader.KEY_VALUE_SEPERATOR, " ");
 
     Job job = Job.getInstance(conf);
 

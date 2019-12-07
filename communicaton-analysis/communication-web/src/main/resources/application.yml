@@ -1,0 +1,144 @@
+server:
+  port: 10013
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8000/eureka/
+  #      defaultZone: http://peer1:8000/eureka/, http://peer2:8001/eureka/
+  instance:
+    prefer-ip-address: true
+
+spring:
+  application:
+    name: data-process
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: config-server
+      profile: dev
+      label: master
+      #      uri: http://localhost:9060/
+      username: admin
+      password: admin
+      fail-fast: true
+    stream:
+      default-binder: kafka
+      bindings:
+        travel-image-send:
+          destination: travel-image-send
+
+
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/communication?useSSL=false&charset=utf8mb4
+    username: root
+    password: 123456
+    type: com.alibaba.druid.pool.DruidDataSource
+
+    druid:
+      # 初始化大小 ，最大，最小
+      initial-size: 10 #初始化时建立物理连接的个数。初始化发生在显示调用init方法，或者第一次getConnection时
+      min-idle: 10     #最小连接池数量
+      maxActive: 100   #最大连接池数量
+      # 配置获取连接等待超时时间
+      maxWait: 60000
+      # 配置一个连接在池中的最小生存时间,单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      test-on-return: false
+      # 打开 PSCache,并且指定每个连接上PSCache的大小
+      poolPreparedStatements: true
+      # 配置监控统计拦截的filters,去掉后监控界面sql将无法统计,'wall' 用于防火墙
+      #      filters: stat,wall,log4j
+      # 通过 connectProperties 属性来打开mergeSql功能；慢SQL记录
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.showSqlMillis=5000
+      # 合并多个 DruidDataSource的监控数据
+      # useGlobalDataSourceStat=true
+      time-between-eviction-runs-millis: 60000
+      max-pool-prepared-statement-per-connection-size: 20
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  data:
+    elasticsearch:
+      cluster-name: elasticsearch
+      repositories:
+        enabled: true
+      cluster-nodes: 127.0.0.1:9300
+#  thymeleaf:
+#    cache: false
+#    mode: LEGACYHTML5
+#  servlet:
+#    multipart:
+#      max-file-size: 50Mb
+#      max-request-size: 50Mb
+
+
+## Mybatis配置
+#mybatis:
+#  mapperLocations: classpath:com/cycloneboy/crawler/noxue/dao/mapper/*.mapper
+#  typeAliasesPackage: com.cycloneboy.crawler.noxue.entity
+#  #config-location: classpath:mybatis.mapper
+#  configuration:
+#    map-underscore-to-camel-case: true  #使用驼峰法映射属性
+
+#mybatis:
+#  mapperLocations: classpath:mapper/**/*.mapper
+
+
+
+# Mybatis-plus配置
+mybatis-plus:
+  # 如果是放在src/main/java目录下 classpath:/com/yourpackage/*/mapper/*Mapper.xml
+  # 如果是放在resource目录 classpath:/mapper/*Mapper.xml
+  mapper-locations: classpath:mapper/*.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.cycloneboy.springcloud.mafengwo.entity
+  configuration:
+    #配置返回数据库(column下划线命名&&返回java实体是驼峰命名)，自动匹配无需as（没开启这个，SQL需要写as： select user_id as userId）
+    map-underscore-to-camel-case: true  #使用驼峰法映射属性
+    cache-enabled: false
+    #配置JdbcTypeForNull, oracle数据库必须配置
+    jdbc-type-for-null: 'null'
+  global-config:
+    #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+    id-type: 0
+    #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+    field-strategy: 2
+    #驼峰下划线转换
+    db-column-underline: true
+    #刷新mapper 调试神器
+    refresh-mapper: true
+    #mp2.3+ 全局表前缀 mp_
+    #table-prefix: mp_
+    #刷新mapper 调试神器
+    #refresh-mapper: true
+    #数据库大写下划线转换
+    #capital-mode: true
+    # Sequence序列接口实现类配置
+    key-generator: com.baomidou.mybatisplus.incrementer.OracleKeyGenerator
+    #逻辑删除配置（下面3个配置）
+    logic-delete-value: 1
+    logic-not-delete-value: 0
+    #sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector
+    #自定义填充策略接口实现
+    #meta-object-handler: com.baomidou.springboot.MyMetaObjectHandler
+    #数据库大写下划线转换
+    #capital-mode: true
+    #Sequence序列接口实现类配置
+    #key-generator: com.baomidou.springboot.xxx
+    #逻辑删除配置
+    #logic-delete-value: 0
+    #logic-not-delete-value: 1
+    #自定义填充策略接口实现
+    #meta-object-handler: com.baomidou.springboot.xxx
+    #自定义SQL注入器
+    #sql-injector: com.baomidou.springboot.xxx
+

@@ -126,6 +126,7 @@ public class DimensionConverterImpl implements DimensionConverter {
       // 1
       // 查询的preparedStatement
       preparedStatement = connection.prepareStatement(sqls[0]);
+      //      log.info("preparedStatement: {}", preparedStatement.toString());
 
       // 根据不同的维度，封装不同的SQL语句
       setArguments(preparedStatement, dimension);
@@ -181,13 +182,13 @@ public class DimensionConverterImpl implements DimensionConverter {
       if (dimension instanceof DateDimension) {
 
         // 可以优化
-        DateDimension dateDimension = new DateDimension();
+        DateDimension dateDimension = (DateDimension) dimension;
         preparedStatement.setInt(++index, dateDimension.getYear());
         preparedStatement.setInt(++index, dateDimension.getMonth());
         preparedStatement.setInt(++index, dateDimension.getDay());
 
       } else if (dimension instanceof ContactDimension) {
-        ContactDimension contactDimension = new ContactDimension();
+        ContactDimension contactDimension = (ContactDimension) dimension;
         preparedStatement.setString(++index, contactDimension.getTelephone());
         preparedStatement.setString(++index, contactDimension.getName());
       } else {

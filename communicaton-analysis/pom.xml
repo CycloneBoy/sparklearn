@@ -44,6 +44,11 @@
     <springboot.version>2.2.1.RELEASE</springboot.version>
 
     <hbase.version>1.4.11</hbase.version>
+
+    <fastjson.version>1.2.49</fastjson.version>
+    <durid.version>1.1.13</durid.version>
+    <jackson.version>2.9.0</jackson.version>
+
   </properties>
 
   <!-- 声明并引入子项目共有的依赖 -->
@@ -84,6 +89,15 @@
       </dependency>
 
       <!-- 引入spring-boot相关的Jar包 -->
+      <!-- Spring Boot 依赖 -->
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${springboot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>

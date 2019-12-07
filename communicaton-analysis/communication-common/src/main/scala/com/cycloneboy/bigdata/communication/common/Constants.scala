@@ -122,4 +122,7 @@ object Constants {
   val DATETIME_FORMATE_STANDARD = "yyyy-MM-dd HH:mm:ss"
   val DELIMITER_COMMA = ","
   val DELIMITER_UNDERLINE = "_"
+
+  val DIMENSION_DATE_DEFAULT_MONTH = -1
+  val DIMENSION_DATE_DEFAULT_DAY = -1
 }

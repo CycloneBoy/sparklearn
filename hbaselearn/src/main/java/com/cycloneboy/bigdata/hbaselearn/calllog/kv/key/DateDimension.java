@@ -1,6 +1,6 @@
-package com.cycloneboy.bigdata.communication.kv.key;
+package com.cycloneboy.bigdata.hbaselearn.calllog.kv.key;
 
-import com.cycloneboy.bigdata.communication.kv.base.BaseDimension;
+import com.cycloneboy.bigdata.hbaselearn.calllog.kv.base.BaseDimension;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;

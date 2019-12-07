@@ -1,6 +1,6 @@
-package com.cycloneboy.bigdata.communication.kv.key;
+package com.cycloneboy.bigdata.hbaselearn.calllog.kv.key;
 
-import com.cycloneboy.bigdata.communication.kv.base.BaseDimension;
+import com.cycloneboy.bigdata.hbaselearn.calllog.kv.base.BaseDimension;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -21,7 +21,6 @@ public class ComDimension extends BaseDimension {
   private DateDimension dateDimension = new DateDimension();
 
   public ComDimension(ContactDimension contactDimension, DateDimension dateDimension) {
-    super();
     this.contactDimension = contactDimension;
     this.dateDimension = dateDimension;
     this.id = contactDimension.getId() + "_" + dateDimension.getId();
