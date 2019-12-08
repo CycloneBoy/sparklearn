@@ -1,0 +1,27 @@
+### 按年查询
+GET http://localhost:10013/api/call/byday?telephone=15542823911&year=2019&month=10&day=12
+
+<> 2019-12-07T064924.200.json
+<> 2019-12-07T064756.200.json
+
+###
+GET http://localhost:10013/api/call/byday?telephone=15542823911&year=2019&month=6&day=12
+
+<> 2019-12-08T032831.200.json
+<> 2019-12-07T065028.200.json
+
+
+### 按月查询
+GET http://localhost:10013/api/call/bymonth?telephone=15542823911&year=2019&month=6&day=12
+
+<> 2019-12-08T042003.200.json
+<> 2019-12-07T065054.200.json
+
+### 按年查询
+GET http://localhost:10013/api/call/byyear?telephone=15542823911&year=2019&month=6&day=12
+
+<> 2019-12-08T042008.200.json
+<> 2019-12-07T065147.200.json
+
+###
+
