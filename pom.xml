@@ -18,6 +18,9 @@
     <module>flumelearn</module>
     <module>business-analysis</module>
     <module>communicaton-analysis</module>
+    <module>hbase-oss</module>
+    <!-- 蚂蜂窝游记分析 -->
+    <module>mafengwo-analysis</module>
   </modules>
 
 
