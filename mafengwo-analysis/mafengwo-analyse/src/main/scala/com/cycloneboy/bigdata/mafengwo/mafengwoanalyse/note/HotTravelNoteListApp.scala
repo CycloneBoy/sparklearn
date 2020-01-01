@@ -33,9 +33,26 @@ object HotTravelNoteListApp {
 
     val sc = spark.sparkContext
 
+    // 导入热门游记目的地的热门游记列表
     val hotTravelNoteListRdd: RDD[TravelHotNote] = ProcessUtils.getHotTravelNoteListRDD(spark, taskParam)
+    hotTravelNoteListRdd.persist()
+
+    println("蜂首游记总数: " + hotTravelNoteListRdd.count())
 
     ProcessUtils.printRDD(hotTravelNoteListRdd)
+
+    val hotTravelRdd: RDD[(Long, (Long, String, String, String))] = hotTravelNoteListRdd.map {
+      case (hotNote: TravelHotNote) => (hotNote.total_number, (hotNote.id, hotNote.country_name, hotNote.city_name, hotNote.city_url))
+    }
+
+    val sortHotTravelNoteListRdd: RDD[(Long, (Long, String, String, String))] = hotTravelRdd.sortByKey(false)
+    sortHotTravelNoteListRdd.persist()
+
+    println("------------------------------获取热门游记目的地前100的热门游记信息---------------------------------")
+    sortHotTravelNoteListRdd.take(100) foreach println
+
+    println("蜂首游记热门作者总数:" + sortHotTravelNoteListRdd.count())
+    println("蜂首游记目的地:" + hotTravelNoteListRdd.count())
 
     // 关闭Spark上下文
     spark.close()

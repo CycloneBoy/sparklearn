@@ -1,7 +1,7 @@
 package com.cycloneboy.bigdata.mafengwo.mafengwoanalyse.utils
 
 import com.cycloneboy.bigdata.mafengwo.mafengwocommon.common.Constants
-import com.cycloneboy.bigdata.mafengwo.mafengwocommon.model.{TravelHotNote, TravelNote}
+import com.cycloneboy.bigdata.mafengwo.mafengwocommon.model.{TravelHotNote, TravelHotNoteDetail, TravelNote}
 import com.cycloneboy.bigdata.mafengwo.mafengwocommon.utils.ParamUtils
 import net.sf.json.JSONObject
 import org.apache.spark.rdd.RDD
@@ -55,4 +55,16 @@ object ProcessUtils {
       .as[TravelHotNote].rdd
   }
 
+  /**
+   * 获取热门游记目的地的游记数据
+   *
+   * @param spark
+   * @param taskParam
+   * @return
+   */
+  def getTravelHotDstinationNoteRDD(spark: SparkSession, taskParam: JSONObject): RDD[TravelHotNoteDetail] = {
+    import spark.implicits._
+    spark.sql("select * from t_travel_hot_destination_note")
+      .as[TravelHotNoteDetail].rdd
+  }
 }

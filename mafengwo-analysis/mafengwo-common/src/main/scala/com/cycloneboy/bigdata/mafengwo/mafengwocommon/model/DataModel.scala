@@ -95,7 +95,6 @@ case class TravelHotNote(id: Long,
  * @param create_datetime            创建时间
  */
 case class TravelHotNoteDetail(
-                                id: Long,
                                 resource_type: String,
                                 travel_url: String,
                                 travel_name: String,
@@ -108,9 +107,9 @@ case class TravelHotNoteDetail(
                                 author_url: String,
                                 author_name: String,
                                 author_image_url: String,
-                                travel_view_count: Long,
-                                travel_comment_count: Long,
-                                travel_up_count: Long,
+                                travel_view_count: String,
+                                travel_comment_count: String,
+                                travel_up_count: String,
                                 travel_father_id: String,
                                 travel_id: String,
                                 crawl_status: String,
