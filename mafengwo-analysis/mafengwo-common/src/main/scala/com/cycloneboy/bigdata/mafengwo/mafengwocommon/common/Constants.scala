@@ -126,4 +126,9 @@ object Constants {
   val TABLE_AD_USER_CLICK_COUNT = "ad_user_click_count"
   val TABLE_AD_PROVINCE_TOP3 = "ad_province_top3"
   val TABLE_AD_CLICK_TREND = "ad_click_trend"
+
+  /**
+   * 蚂蜂窝 游记分析
+   */
+  val MAENGWO_HOST = "http://www.mafengwo.cn"
 }

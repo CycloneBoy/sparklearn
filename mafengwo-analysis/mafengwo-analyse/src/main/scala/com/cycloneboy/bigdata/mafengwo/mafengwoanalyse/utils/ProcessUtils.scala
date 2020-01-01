@@ -1,7 +1,7 @@
 package com.cycloneboy.bigdata.mafengwo.mafengwoanalyse.utils
 
 import com.cycloneboy.bigdata.mafengwo.mafengwocommon.common.Constants
-import com.cycloneboy.bigdata.mafengwo.mafengwocommon.model.TravelNote
+import com.cycloneboy.bigdata.mafengwo.mafengwocommon.model.{TravelHotNote, TravelNote}
 import com.cycloneboy.bigdata.mafengwo.mafengwocommon.utils.ParamUtils
 import net.sf.json.JSONObject
 import org.apache.spark.rdd.RDD
@@ -22,9 +22,9 @@ object ProcessUtils {
    * @return
    */
   def getTravelNoteRDDByYearRange(spark: SparkSession, taskParam: JSONObject): RDD[TravelNote] = {
-    import spark.implicits._
     val startYear = ParamUtils.getParam(taskParam, Constants.PARAM_START_YEAR)
     val endYear = ParamUtils.getParam(taskParam, Constants.PARAM_END_YEAR)
+    import spark.implicits._
     spark.sql("select * from t_travel_note_hive where year >='" + startYear + "' and year<'" + endYear + "'")
       .as[TravelNote].rdd
   }
@@ -41,5 +41,18 @@ object ProcessUtils {
     actionRdd.take(numberOfline) foreach println
   }
 
+
+  /**
+   * 获取热门游记目的地的游记数据
+   *
+   * @param spark
+   * @param taskParam
+   * @return
+   */
+  def getHotTravelNoteListRDD(spark: SparkSession, taskParam: JSONObject): RDD[TravelHotNote] = {
+    import spark.implicits._
+    spark.sql("select * from t_hot_travel_note_list")
+      .as[TravelHotNote].rdd
+  }
 
 }

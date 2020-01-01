@@ -1,5 +1,7 @@
 package com.cycloneboy.bigdata.businessanalysis.commons.model
 
+import java.sql.Date
+
 /**
  *
  * Create by  sl on 2019-11-25 14:32
@@ -78,3 +80,33 @@ case class ProductInfo(product_id: Long,
                        product_name: String,
                        extend_info: String
                       )
+
+/**
+ * 蜂首游记
+ *
+ * @param id               ID
+ * @param year             游记年
+ * @param month            游记月
+ * @param day              游记日
+ * @param url              游记链接
+ * @param note_image_url   游记封面链接
+ * @param destination      游记目的地
+ * @param author_url       作者链接
+ * @param author_name      作者名称
+ * @param author_image_url 游记作者图片链接
+ * @param create_time      创建时间
+ * @param note_type        游记类型
+ */
+case class TravelNote(id: Integer,
+                      year: Integer,
+                      month: Integer,
+                      day: Integer,
+                      url: String,
+                      note_image_url: String,
+                      destination: String,
+                      author_url: String,
+                      author_name: String,
+                      author_image_url: String,
+                      create_time: Date,
+                      note_type: Integer
+                     )

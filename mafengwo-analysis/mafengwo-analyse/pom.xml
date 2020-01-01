@@ -9,6 +9,7 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
+
   <groupId>com.cycloneboy.bigdata.mafengwo</groupId>
   <artifactId>mafengwo-analyse</artifactId>
   <version>0.0.1-SNAPSHOT</version>
@@ -17,7 +18,7 @@
 
   <properties>
     <java.version>1.8</java.version>
-    <springboot.version>2.2.1.RELEASE</springboot.version>
+    <kafka.client.version>0.10.2.1</kafka.client.version>
   </properties>
 
   <dependencies>
@@ -27,6 +28,7 @@
       <artifactId>mafengwo-common</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
+
 
     <!-- spark  -->
     <dependency>
@@ -94,21 +96,6 @@
     </dependency>
 
   </dependencies>
-
-  <dependencyManagement>
-    <dependencies>
-      <!-- 引入spring-boot相关的Jar包 -->
-      <!-- Spring Boot 依赖 -->
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${springboot.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-
-    </dependencies>
-  </dependencyManagement>
 
   <build>
 
