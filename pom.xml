@@ -23,6 +23,9 @@
     <module>mafengwo-analysis</module>
     <!--    kafka学习-->
     <module>kafka-learn</module>
+    <!--    storm学习-->
+    <module>storm-learn</module>
+    <module>storm-learn/storm-data</module>
   </modules>
 
 
@@ -65,6 +68,7 @@
 
     <log4j.version>1.2.17</log4j.version>
     <slf4j.version>1.7.22</slf4j.version>
+    <storm.version>2.1.0</storm.version>
 
   </properties>
 
@@ -273,6 +277,12 @@
         <version>${commons-lang3.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.4</version>
+      </dependency>
+
       <!-- alibaba 依赖-->
       <dependency>
         <groupId>com.alibaba</groupId>
@@ -285,6 +295,12 @@
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
         <version>${joda.time.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.storm</groupId>
+        <artifactId>storm-core</artifactId>
+        <version>${storm.version}</version>
       </dependency>
 
 

@@ -14,4 +14,6 @@ public class Constants {
   public static final String DEFAULT_CHARSET = "UTF-8";
 
   public static final int EXPIRE_INTERVAL = 10 * 1000;
+
+  public static final String TOPIC_ADMIN = "topic-admin";
 }

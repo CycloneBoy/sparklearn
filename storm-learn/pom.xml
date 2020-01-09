@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>sparklearn</artifactId>
+    <groupId>com.cycloneboy.bigdata</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>stormlearn</artifactId>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>storm-common</module>
+    <module>storm-data</module>
+  </modules>
+
+  <properties>
+    <storm.version>2.1.0</storm.version>
+    <storm.kafka.version>1.2.3</storm.kafka.version>
+    <storm.kafka.client>2.1.0</storm.kafka.client>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.storm</groupId>
+      <artifactId>storm-core</artifactId>
+      <version>${storm.version}</version>
+    </dependency>
+
+
+  </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
+
+      <dependency>
+        <groupId>org.apache.storm</groupId>
+        <artifactId>storm-kafka</artifactId>
+        <version>${storm.kafka.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.storm</groupId>
+        <artifactId>storm-kafka-client</artifactId>
+        <version>${storm.version}</version>
+      </dependency>
+
+
+    </dependencies>
+  </dependencyManagement>
+
+</project>
