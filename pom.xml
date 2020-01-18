@@ -21,6 +21,8 @@
     <module>hbase-oss</module>
     <!-- 蚂蜂窝游记分析 -->
     <module>mafengwo-analysis</module>
+    <!--    kafka学习-->
+    <module>kafka-learn</module>
   </modules>
 
 
