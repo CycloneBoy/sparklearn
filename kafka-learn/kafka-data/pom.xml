@@ -13,6 +13,7 @@
   <groupId>com.cycloneboy.bigdata.kafka.data</groupId>
   <artifactId>kafka-data</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <description>深入理解kafka核心设计和实践原理</description>
 
 
   <dependencies>

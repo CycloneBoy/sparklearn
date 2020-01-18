@@ -14,7 +14,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 /** Create by sl on 2020-01-18 13:31 */
 @Slf4j
-public class ProducerWithInterceptor {
+public class ProducerWithNumberRecord {
 
   public static void main(String[] args) {
     Properties properties = new Properties();
@@ -31,7 +31,7 @@ public class ProducerWithInterceptor {
 
     KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
 
-    int sendRecordNumber = 1000;
+    int sendRecordNumber = 100;
 
     for (int i = 0; i < sendRecordNumber; i++) {
       ProducerRecord<String, String> record =

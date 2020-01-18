@@ -15,6 +15,7 @@
   <version>0.0.1-SNAPSHOT</version>
 
   <modules>
+    <!-- 深入理解kafka核心设计和实践原理-->
     <module>kafka-data</module>
   </modules>
 

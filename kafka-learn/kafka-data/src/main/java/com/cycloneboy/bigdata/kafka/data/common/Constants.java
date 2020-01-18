@@ -12,4 +12,6 @@ public class Constants {
   public static final String CLIENT_ID_DEMO = "producer.client.id.demo";
 
   public static final String DEFAULT_CHARSET = "UTF-8";
+
+  public static final int EXPIRE_INTERVAL = 10 * 1000;
 }
