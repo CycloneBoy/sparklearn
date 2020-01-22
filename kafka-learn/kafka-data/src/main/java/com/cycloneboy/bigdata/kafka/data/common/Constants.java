@@ -7,6 +7,8 @@ public class Constants {
 
   public static final String TOPIC_GREETINGS = "greetings";
 
+  public static final String TOPIC_WORD_COUNT = "word-count";
+
   public static final String GROUP_ID_DEMO = "group.demo";
 
   public static final String CLIENT_ID_DEMO = "producer.client.id.demo";

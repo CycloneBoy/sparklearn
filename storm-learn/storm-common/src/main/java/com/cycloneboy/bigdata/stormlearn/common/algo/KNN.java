@@ -90,7 +90,7 @@ public class KNN {
         ++type3;
       }
     }
-    //		System.out.println(type1 + "========" + type2 + "=========" + type3);
+    System.out.println(type1 + "========" + type2 + "=========" + type3);
     if (type1 > type2) {
       if (type1 > type3) {
         return 1;
