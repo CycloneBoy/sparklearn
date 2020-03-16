@@ -16,4 +16,5 @@ public class Lower extends UDF {
     }
     return s.toLowerCase();
   }
+  // evaluate evaluate evaluate evaluate
 }
