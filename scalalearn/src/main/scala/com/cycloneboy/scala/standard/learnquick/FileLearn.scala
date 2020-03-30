@@ -24,9 +24,9 @@ object FileLearn {
     "ls -al .." #> new File("output.txt")
     //    val result = "ls -al .." !!
     //      println(result)
-    val properties: scala.collection.mutable.Map[String, String] = System.getProperties
-    val value: AnyRef = properties.get("test")
-    println(value)
+    //    val properties: scala.collection.mutable.Map[String, String] = System.getProperties
+    //    val value: AnyRef = properties.get("test")
+    //    println(value)
 
     for (i <- (0 until 100).par) print(i + " ")
     for (i <- (0 until 100).par) yield (i + " ")

@@ -25,7 +25,10 @@
     <module>kafka-learn</module>
     <!--    storm学习-->
     <module>storm-learn</module>
-    <module>storm-learn/storm-data</module>
+    <!--    数据仓库-->
+    <module>log-analysis</module>
+    <module>flink-learn</module>
+
   </modules>
 
 

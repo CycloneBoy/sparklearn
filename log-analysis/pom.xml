@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>sparklearn</artifactId>
+    <groupId>com.cycloneboy.bigdata</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <packaging>pom</packaging>
+
+  <artifactId>log-analysis</artifactId>
+  <groupId>com.cycloneboy.bigdata.loganalysis</groupId>
+
+  <modules>
+    <module>log-collector</module>
+    <module>flume-interceptor</module>
+    <module>hive-function</module>
+  </modules>
+
+
+  <!--版本号统一-->
+  <properties>
+    <slf4j.version>1.7.20</slf4j.version>
+    <logback.version>1.2.3</logback.version>
+    <fastjson.version>1.2.51</fastjson.version>
+    <flume.version>1.7.0</flume.version>
+
+    <hive.version>2.3.6</hive.version>
+  </properties>
+
+  <dependencies>
+
+  </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
+      <!--阿里巴巴开源json解析框架-->
+      <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>fastjson</artifactId>
+        <version>${fastjson.version}</version>
+      </dependency>
+
+      <!--日志生成框架-->
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>${logback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.version}</version>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+
+</project>
