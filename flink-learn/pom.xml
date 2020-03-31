@@ -15,7 +15,7 @@
   <version>1.0-SNAPSHOT</version>
 
   <properties>
-    <flink.version>1.7.0</flink.version>
+    <flink.version>1.10.0</flink.version>
     <scala.vesion>2.12</scala.vesion>
   </properties>
 
@@ -38,6 +38,11 @@
         <version>${flink.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.apache.flink</groupId>
+        <artifactId>flink-connector-kafka_${scala.vesion}</artifactId>
+        <version>${flink.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
