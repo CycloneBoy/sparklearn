@@ -21,6 +21,7 @@
 
   <modules>
     <module>flink-base</module>
+    <module>flink-api</module>
   </modules>
 
 

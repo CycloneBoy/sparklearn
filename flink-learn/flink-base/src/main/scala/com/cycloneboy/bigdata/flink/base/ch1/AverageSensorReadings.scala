@@ -35,6 +35,7 @@ object AverageSensorReadings {
 
     // use event time for the application
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
+
     // configure watermark interval
     env.getConfig.setAutoWatermarkInterval(1000L)
 
