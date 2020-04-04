@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cycloneboy.bigdata.flink.base.ch1
+package com.cycloneboy.bigdata.flink.base.chapter1
 
 
 import com.cycloneboy.bigdata.flink.base.util.{SensorReading, SensorSource, SensorTimeAssigner}

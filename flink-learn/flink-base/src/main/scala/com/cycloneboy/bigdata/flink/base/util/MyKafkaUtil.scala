@@ -1,4 +1,4 @@
-package com.cycloneboy.bigdata.flink.base.utils
+package com.cycloneboy.bigdata.flink.base.util
 
 import java.util.Properties
 

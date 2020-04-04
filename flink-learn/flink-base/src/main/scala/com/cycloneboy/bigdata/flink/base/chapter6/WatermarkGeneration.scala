@@ -1,9 +1,9 @@
 package com.cycloneboy.bigdata.flink.base.chapter6
 
-import com.cycloneboy.bigdata.flink.base.util.{SensorReading, SensorSource}
+import com.cycloneboy.bigdata.flink.base.util.SensorReading
 import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.functions.{AssignerWithPeriodicWatermarks, AssignerWithPunctuatedWatermarks}
-import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
+import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.streaming.api.watermark.Watermark
 
 object WatermarkGeneration {
@@ -18,20 +18,20 @@ object WatermarkGeneration {
     // configure interval of periodic watermark generation
     env.getConfig.setAutoWatermarkInterval(1000L)
 
-    // ingest sensor stream
-    val readings: DataStream[SensorReading] = env
-      // SensorSource generates random temperature readings
-      .addSource(new SensorSource)
-
-    val readingsWithPeriodicWMs = readings
-      // assign timestamps and periodic watermarks
-      .assignTimestampsAndWatermarks(new PeriodicAssigner)
-
-    val readingsWithPunctuatedWMs = readings
-      // assign timestamps and punctuated watermarks
-      .assignTimestampsAndWatermarks(new PunctuatedAssigner)
-
-    readingsWithPeriodicWMs.print()
+    //    // ingest sensor stream
+    //    val readings: DataStream[SensorReading] = env
+    //      // SensorSource generates random temperature readings
+    //      .addSource(new SensorSource)
+    //
+    //    val readingsWithPeriodicWMs = readings
+    //      // assign timestamps and periodic watermarks
+    //      .assignTimestampsAndWatermarks(new PeriodicAssigner)
+    //
+    //    val readingsWithPunctuatedWMs = readings
+    //      // assign timestamps and punctuated watermarks
+    //      .assignTimestampsAndWatermarks(new PunctuatedAssigner)
+    //
+    //    readingsWithPeriodicWMs.print()
     //    readingsWithPunctuatedWMs.print()
 
     env.execute("Assign timestamps and generate watermarks")
