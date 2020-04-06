@@ -58,7 +58,7 @@ object MultiStreamTransformations {
       .keyBy(_.id)
 
     // connect the two streams and raise an alert if the temperature and smoke levels are high
-    val alerts = keyed
+    val alerts: DataStream[Alert] = keyed
       .connect(smokeReadings.broadcast)
       .flatMap(new RaiseAlertFlatMap)
 

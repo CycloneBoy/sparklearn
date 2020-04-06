@@ -30,7 +30,8 @@ object RollingSum {
 
     val resultStream: DataStream[(Int, Int, Int)] = inputStream
       .keyBy(0) // key on first field of the tuple
-      .sum(1) // sum the second field of the tuple
+      .max(1)
+    //      .sum(1) // sum the second field of the tuple
 
     resultStream.print()
 

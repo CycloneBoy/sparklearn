@@ -31,13 +31,14 @@ object AverageSensorReadings {
   def main(args: Array[String]) {
 
     // set up the streaming execution environment
-    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
 
     // use event time for the application
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
 
     // configure watermark interval
     env.getConfig.setAutoWatermarkInterval(1000L)
+
 
     // ingest sensor stream
     val sensorData: DataStream[SensorReading] = env

@@ -15,8 +15,9 @@
  */
 package com.cycloneboy.bigdata.flink.base.chapter5
 
+import com.cycloneboy.bigdata.flink.base.chapter5.util.KeywordFilter
 import com.cycloneboy.bigdata.flink.base.util.{SensorReading, SensorSource, SensorTimeAssigner}
-import org.apache.flink.api.common.functions.{FilterFunction, FlatMapFunction, MapFunction}
+import org.apache.flink.api.common.functions.{FilterFunction, FlatMapFunction, MapFunction, RichFilterFunction}
 import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.util.Collector
@@ -68,6 +69,15 @@ object BasicTransformations {
 
     // print result stream to standard out
     splitIds.print()
+
+    val containsFlinks: DataStream[String] = splitIds.filter(new RichFilterFunction[String] {
+      override def filter(value: String): Boolean = value.contains("flink")
+    })
+
+    containsFlinks.print()
+
+    val result: DataStream[String] = containsFlinks
+      .filter(new KeywordFilter("flink1"))
 
     // execute application
     env.execute("Basic Transformations Example")
