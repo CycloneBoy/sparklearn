@@ -41,6 +41,7 @@ object CustomWindows {
       .keyBy(_.id)
       // a custom window assigner for 30 second tumbling windows
       .window(new ThirtySecondsWindows)
+
       // a custom trigger that fires early (at most) every second
       .trigger(new OneSecondIntervalTrigger)
       // count readings per window

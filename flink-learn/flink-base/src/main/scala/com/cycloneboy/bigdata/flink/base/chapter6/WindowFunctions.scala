@@ -37,13 +37,16 @@ object WindowFunctions {
     val minTempPerWindow: DataStream[(String, Double)] = sensorData
       .map(r => (r.id, r.temperature))
       .keyBy(_._1)
+      //      .window(TumblingEventTimeWindows.of(Time.seconds(10)))
       .timeWindow(Time.seconds(15))
       .reduce((r1, r2) => (r1._1, r1._2.min(r2._2)))
 
     val minTempPerWindow2: DataStream[(String, Double)] = sensorData
       .map(r => (r.id, r.temperature))
       .keyBy(_._1)
+      //      .window(EventTimeSessionWindows.withGap(Time.seconds(15)))
       .timeWindow(Time.seconds(15))
+
       .reduce(new MinTempFunction)
 
     val avgTempPerWindow: DataStream[(String, Double)] = sensorData

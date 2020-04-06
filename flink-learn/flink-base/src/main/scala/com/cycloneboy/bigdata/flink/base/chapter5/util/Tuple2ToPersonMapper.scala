@@ -3,6 +3,7 @@ package com.cycloneboy.bigdata.flink.base.chapter5.util
 import org.apache.flink.api.common.functions.MapFunction
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.java.typeutils.ResultTypeQueryable
+import org.apache.flink.api.scala._
 import org.apache.flink.api.scala.typeutils.Types
 
 /**

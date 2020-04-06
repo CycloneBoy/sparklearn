@@ -31,7 +31,7 @@ object CoProcessFunctionTimers {
       // SensorSource generates random temperature readings
       .addSource(new SensorSource)
 
-    val forwardedReadings = readings
+    val forwardedReadings: DataStream[SensorReading] = readings
       // connect readings and switches
       .connect(filterSwitches)
       // key by sensor ids
@@ -80,8 +80,8 @@ class ReadingFilter
     // enable reading forwarding
     forwardingEnabled.update(true)
     // set disable forward timer
-    val timerTimestamp = ctx.timerService().currentProcessingTime() + switch._2
-    val curTimerTimestamp = disableTimer.value()
+    val timerTimestamp: Long = ctx.timerService().currentProcessingTime() + switch._2
+    val curTimerTimestamp: Long = disableTimer.value()
     if (timerTimestamp > curTimerTimestamp) {
       // remove current timer and register new timer
       ctx.timerService().deleteProcessingTimeTimer(curTimerTimestamp)
