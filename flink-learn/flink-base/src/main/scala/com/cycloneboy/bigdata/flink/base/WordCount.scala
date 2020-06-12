@@ -21,7 +21,11 @@ object WordCount {
     val ds: DataSet[String] = env.readTextFile(input)
 
     import org.apache.flink.api.scala.createTypeInformation
-    val aggDs: AggregateDataSet[(String, Int)] = ds.flatMap(_.split(" ")).map((_, 1)).groupBy(0).sum(1)
+    val aggDs: AggregateDataSet[(String, Int)] = ds
+      .flatMap(_.split(" "))
+      .map((_, 1))
+      .groupBy(0)
+      .sum(1)
 
     aggDs.print()
 

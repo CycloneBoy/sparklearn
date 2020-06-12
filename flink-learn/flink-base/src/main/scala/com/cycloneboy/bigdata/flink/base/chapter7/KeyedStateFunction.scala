@@ -38,22 +38,22 @@ object KeyedStateFunction {
       .flatMap(new TemperatureAlertFunction(1.7))
 
     /* Scala shortcut to define a stateful FlatMapFunction. */
-    //    val alerts: DataStream[(String, Double, Double)] = keyedSensorData
-    //      .flatMapWithState[(String, Double, Double), Double] {
-    //        case (in: SensorReading, None) =>
-    //          // no previous temperature defined. Just update the last temperature
-    //          (List.empty, Some(in.temperature))
-    //        case (r: SensorReading, lastTemp: Some[Double]) =>
-    //          // compare temperature difference with threshold
-    //          val tempDiff = (r.temperature - lastTemp.get).abs
-    //          if (tempDiff > 1.7) {
-    //            // threshold exceeded. Emit an alert and update the last temperature
-    //            (List((r.id, r.temperature, tempDiff)), Some(r.temperature))
-    //          } else {
-    //            // threshold not exceeded. Just update the last temperature
-    //            (List.empty, Some(r.temperature))
-    //          }
-    //      }
+    val alerts2: DataStream[(String, Double, Double)] = keyedSensorData
+      .flatMapWithState[(String, Double, Double), Double] {
+        case (in: SensorReading, None) =>
+          // no previous temperature defined. Just update the last temperature
+          (List.empty, Some(in.temperature))
+        case (r: SensorReading, lastTemp: Some[Double]) =>
+          // compare temperature difference with threshold
+          val tempDiff = (r.temperature - lastTemp.get).abs
+          if (tempDiff > 1.7) {
+            // threshold exceeded. Emit an alert and update the last temperature
+            (List((r.id, r.temperature, tempDiff)), Some(r.temperature))
+          } else {
+            // threshold not exceeded. Just update the last temperature
+            (List.empty, Some(r.temperature))
+          }
+      }
 
     // print result stream to standard out
     alerts.print()

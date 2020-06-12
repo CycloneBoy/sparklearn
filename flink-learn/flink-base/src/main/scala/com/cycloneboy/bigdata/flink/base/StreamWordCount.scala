@@ -16,13 +16,20 @@ object StreamWordCount {
 
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
 
+    env.setParallelism(1)
+
     val textDstream: DataStream[String] = env.socketTextStream(host, port)
 
     import org.apache.flink.api.scala._
 
-    val dStream: DataStream[(String, Int)] = textDstream.flatMap(_.split(" ")).filter(_.nonEmpty).map((_, 1)).keyBy(0).sum(1)
+    val dStream: DataStream[(String, Int)] = textDstream
+      .flatMap(_.split(" "))
+      .filter(_.nonEmpty)
+      .map((_, 1))
+      .keyBy(0)
+      .sum(1)
 
-    dStream.print()
+    dStream.print().setParallelism(1)
 
     env.execute()
   }
