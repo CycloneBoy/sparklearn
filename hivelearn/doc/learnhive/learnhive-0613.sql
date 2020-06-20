@@ -819,3 +819,73 @@ select sigmoid(2);
 -- 恒等变换,改变类型,投影变换,操作转换,使用分布式内存,由一行产生多行,使用streaming 进行聚合计算,
 -- cluster by,distribute by ,sort by
 -- GenericMR Tools for streaming to Java
+
+
+
+-------------------------------------------------------------------
+--   第15章 Hive 自定义Hive文件和记录格式
+--   2020-06-20
+-------------------------------------------------------------------
+
+create
+external table messages(
+    msg_id bigint,
+    tstamp string,
+    text string,
+    user_id bigint,
+    user_name string
+)row format serde "org.apache.hadoop.hive.contrib.serde2.JsonSerde"
+with serdeproperties (
+    "msg_id"="$.id",
+    "tstamp"="$.create_at",
+    "text"="$.text",
+    "user_id"="$.user_id",
+    "user_name"="$.user_name"
+        )
+location '/data/message';
+
+-------------------------------------------------------------------
+--   第16章 Hive 的Thrift服务
+--   2020-06-20
+-------------------------------------------------------------------
+hive --service hiveserver2  &
+
+hive --service metastore  &
+
+-------------------------------------------------------------------
+--   第17章 Hive 的Thrift服务
+--   2020-06-20
+-------------------------------------------------------------------
+
+-- hbase
+create table hbase_stocks
+(
+    key int,
+    name string,
+    price float
+)stored as 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+with serdeproperties("hbase.columns.mapping" = ":key,stock:val")
+    tblproperties("hbase.table.name"="stocks");
+
+-- 默认开启 下推优化
+set hive.optimize.ppd.storage = true;
+
+
+-------------------------------------------------------------------
+--   第18章 Hive 安全
+--   2020-06-20
+-------------------------------------------------------------------
+
+
+-------------------------------------------------------------------
+--   第19章 Hive 锁
+--   2020-06-20
+-------------------------------------------------------------------
+show locks;
+
+-- 显示锁
+lock
+table messages exclusive ;
+
+unlock
+table messages;
