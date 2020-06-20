@@ -3,6 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <artifactId>sparklearn</artifactId>
     <groupId>com.cycloneboy.bigdata</groupId>
@@ -11,14 +12,18 @@
 
   <artifactId>hivelearn</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
   <name>hivelearn</name>
   <description>Demo project for hive learn</description>
 
+  <modules>
+    <module>hive-common</module>
+  </modules>
 
   <properties>
     <java.version>1.8</java.version>
     <junit.version>4.12</junit.version>
-    <hive.version>3.1.1</hive.version>
+    <hive.version>2.3.6</hive.version>
   </properties>
 
   <dependencies>

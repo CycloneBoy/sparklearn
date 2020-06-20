@@ -730,3 +730,92 @@ from employees_deduction_S;
 describe formatted learnhive.employees_deduction_S;
 
 alter view learnhive.employees_deduction_S set tblproperties ('create_at'='2020-06-14');
+
+-------------------------------------------------------------------
+--   第13章 Hive 函数
+--   2020-06-20
+-------------------------------------------------------------------
+
+show functions;
+
+describe function concat;
+
+select year(ymd),
+       avg(price_close)
+from learnhive.stocks
+where `exchange` = 'NASDAQ'
+  AND symbol = 'AAPL'
+group by year(ymd);
+
+show partitions learnhive.stocks;
+
+describe extended learnhive.stocks;
+show create table learnhive.stocks;
+
+show tables like 'stock*';
+
+select `array`(1, 2, 3);
+select explode(`array`(1, 2, 3));
+
+select name,
+       sub
+from learnhive.employees lateral view explode(subordinates) subView as sub;
+
+create table if not exists littlebigdata
+(
+    name string,
+    email string,
+    bday string,
+    ip string,
+    gender string,
+    anum int
+) row format delimited fields terminated by ',';
+
+load data local inpath '/home/sl/learnhive/data/littlebigdata.txt'
+into table littlebigdata;
+
+select *
+from littlebigdata;
+
+truncate table littlebigdata;
+
+add jar /home/sl/workspace/java/a2019/sparklearn/hivelearn/hive-common/target/hive-common-0.0.1-SNAPSHOT.jar;
+
+create temporary
+function zodiac as 'com.cycloneboy.bigdata.hivelearn.common.UDFZodiacSign';
+create temporary
+function nvl as 'com.cycloneboy.bigdata.hivelearn.common.GenericUDFNvl';
+
+describe function zodiac;
+describe function extended zodiac;
+
+select name, bday, zodiac(bday)
+from learnhive.littlebigdata;
+
+drop
+temporary
+function if exists zodiac;
+
+
+describe function nvl;
+describe function extended nvl;
+
+select nvl(1, 2)          as c1,
+       nvl(NULL, 5)       as c2,
+       nvl(null, 'stuff') as c3;
+
+-- select forx(1,5);
+
+create
+temporary
+macro sigmoid (x double) 1.0/(1.0+exp(-x));
+select sigmoid(2);
+
+-------------------------------------------------------------------
+--   第14章 Hive Streaming
+--   2020-06-20
+-------------------------------------------------------------------
+-- create table a(col1 int ,col2 int)
+-- 恒等变换,改变类型,投影变换,操作转换,使用分布式内存,由一行产生多行,使用streaming 进行聚合计算,
+-- cluster by,distribute by ,sort by
+-- GenericMR Tools for streaming to Java

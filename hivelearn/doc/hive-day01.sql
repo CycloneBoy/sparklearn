@@ -739,7 +739,7 @@ desc function extended upper;
 -- 自定义函数
 add jar /opt/module/datas/udf.jar;
 
-create temporary function mylower as 'com.cycloneboy.bigdata.hivelearn.Lower';
+create temporary function mylower as 'com.cycloneboy.bigdata.hivelearn.common.Lower';
 
 -- 存储格式测试
 -- 创建表
