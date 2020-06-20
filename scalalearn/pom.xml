@@ -18,7 +18,7 @@
     <scala.version>2.12</scala.version>
     <hadoop.version>2.7.2</hadoop.version>
     <jackson.version>2.9.0</jackson.version>
-    <akka.version>2.5.10</akka.version>
+    <akka.version>2.5.16</akka.version>
     <spark.kafka.version>1.6.3</spark.kafka.version>
     <kafka.client.version>2.3.0</kafka.client.version>
     <spark.streaming.flume.version>2.2.2</spark.streaming.flume.version>
