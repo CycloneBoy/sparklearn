@@ -28,6 +28,7 @@
     <!--    数据仓库-->
     <module>log-analysis</module>
     <module>flink-learn</module>
+    <module>phoenix-learn</module>
 
   </modules>
 
