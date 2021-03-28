@@ -28,7 +28,7 @@ public class TestPhoenixJDBC {
     stmt = conn.createStatement();
     stmt.execute("drop table if exists test");
     stmt.execute("create table test (mykey integer not null primary key, mycolumn varchar)");
-//    stmt.execute("create index test_idx on test(mycolumn)");
+    stmt.execute("create index test_idx on test(mycolumn)");
     stmt.executeUpdate("upsert into test values (1,'World!')");
     stmt.executeUpdate("upsert into test values (2,'Hello')");
     stmt.executeUpdate("upsert into test values (3,'World!')");

@@ -1,0 +1,1876 @@
+[
+  {
+    "children": [
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "50",
+                    "parentId": "8",
+                    "sort": 5,
+                    "title": "男"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "51",
+                    "parentId": "8",
+                    "sort": 5,
+                    "title": "女"
+                  }
+                ],
+                "industry": "标签",
+                "key": "8",
+                "parentId": "3",
+                "sort": 4,
+                "title": "性别"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "52",
+                    "parentId": "9",
+                    "sort": 5,
+                    "title": "50后"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "53",
+                    "parentId": "9",
+                    "sort": 5,
+                    "title": "60后"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "54",
+                    "parentId": "9",
+                    "sort": 5,
+                    "title": "70后"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "55",
+                    "parentId": "9",
+                    "sort": 5,
+                    "title": "80后"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "56",
+                    "parentId": "9",
+                    "sort": 5,
+                    "title": "90后"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "57",
+                    "parentId": "9",
+                    "sort": 5,
+                    "title": "00后"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "58",
+                    "parentId": "9",
+                    "sort": 5,
+                    "title": "10后"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "59",
+                    "parentId": "9",
+                    "sort": 5,
+                    "title": "20后"
+                  }
+                ],
+                "industry": "标签",
+                "key": "9",
+                "parentId": "3",
+                "sort": 4,
+                "title": "年龄段"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "60",
+                    "parentId": "10",
+                    "sort": 5,
+                    "title": "150-159"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "61",
+                    "parentId": "10",
+                    "sort": 5,
+                    "title": "160-169"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "62",
+                    "parentId": "10",
+                    "sort": 5,
+                    "title": "170-179"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "63",
+                    "parentId": "10",
+                    "sort": 5,
+                    "title": "180-189"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "64",
+                    "parentId": "10",
+                    "sort": 5,
+                    "title": "190-199"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "65",
+                    "parentId": "10",
+                    "sort": 5,
+                    "title": "200-209"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "66",
+                    "parentId": "10",
+                    "sort": 5,
+                    "title": "210-240"
+                  }
+                ],
+                "industry": "标签",
+                "key": "10",
+                "parentId": "3",
+                "sort": 4,
+                "title": "身高"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "67",
+                    "parentId": "11",
+                    "sort": 5,
+                    "title": "汉族"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "68",
+                    "parentId": "11",
+                    "sort": 5,
+                    "title": "蒙古族"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "69",
+                    "parentId": "11",
+                    "sort": 5,
+                    "title": "回族"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "70",
+                    "parentId": "11",
+                    "sort": 5,
+                    "title": "藏族"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "71",
+                    "parentId": "11",
+                    "sort": 5,
+                    "title": "维吾尔族"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "72",
+                    "parentId": "11",
+                    "sort": 5,
+                    "title": "苗族"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "73",
+                    "parentId": "11",
+                    "sort": 5,
+                    "title": "满族"
+                  }
+                ],
+                "industry": "标签",
+                "key": "11",
+                "parentId": "3",
+                "sort": 4,
+                "title": "民族"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "74",
+                    "parentId": "12",
+                    "sort": 5,
+                    "title": "北京"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "75",
+                    "parentId": "12",
+                    "sort": 5,
+                    "title": "上海"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "76",
+                    "parentId": "12",
+                    "sort": 5,
+                    "title": "广州"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "77",
+                    "parentId": "12",
+                    "sort": 5,
+                    "title": "深圳"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "78",
+                    "parentId": "12",
+                    "sort": 5,
+                    "title": "杭州"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "79",
+                    "parentId": "12",
+                    "sort": 5,
+                    "title": "苏州"
+                  }
+                ],
+                "industry": "标签",
+                "key": "12",
+                "parentId": "3",
+                "sort": 4,
+                "title": "籍贯"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "80",
+                    "parentId": "13",
+                    "sort": 5,
+                    "title": "群众"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "81",
+                    "parentId": "13",
+                    "sort": 5,
+                    "title": "党员"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "82",
+                    "parentId": "13",
+                    "sort": 5,
+                    "title": "无党派人士"
+                  }
+                ],
+                "industry": "标签",
+                "key": "13",
+                "parentId": "3",
+                "sort": 4,
+                "title": "政治面貌"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "83",
+                    "parentId": "14",
+                    "sort": 5,
+                    "title": "学生"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "84",
+                    "parentId": "14",
+                    "sort": 5,
+                    "title": "公务员"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "85",
+                    "parentId": "14",
+                    "sort": 5,
+                    "title": "军人"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "86",
+                    "parentId": "14",
+                    "sort": 5,
+                    "title": "警察"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "87",
+                    "parentId": "14",
+                    "sort": 5,
+                    "title": "教师"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "88",
+                    "parentId": "14",
+                    "sort": 5,
+                    "title": "工人"
+                  }
+                ],
+                "industry": "标签",
+                "key": "14",
+                "parentId": "3",
+                "sort": 4,
+                "title": "职业"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "89",
+                    "parentId": "15",
+                    "sort": 5,
+                    "title": "未婚"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "90",
+                    "parentId": "15",
+                    "sort": 5,
+                    "title": "已婚"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "91",
+                    "parentId": "15",
+                    "sort": 5,
+                    "title": "离异"
+                  }
+                ],
+                "industry": "标签",
+                "key": "15",
+                "parentId": "3",
+                "sort": 4,
+                "title": "婚姻状况"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "92",
+                    "parentId": "16",
+                    "sort": 5,
+                    "title": "小学"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "93",
+                    "parentId": "16",
+                    "sort": 5,
+                    "title": "初中"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "94",
+                    "parentId": "16",
+                    "sort": 5,
+                    "title": "高中"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "95",
+                    "parentId": "16",
+                    "sort": 5,
+                    "title": "大专"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "96",
+                    "parentId": "16",
+                    "sort": 5,
+                    "title": "本科"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "97",
+                    "parentId": "16",
+                    "sort": 5,
+                    "title": "硕士"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "98",
+                    "parentId": "16",
+                    "sort": 5,
+                    "title": "博士"
+                  }
+                ],
+                "industry": "标签",
+                "key": "16",
+                "parentId": "3",
+                "sort": 4,
+                "title": "学历"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "99",
+                    "parentId": "17",
+                    "sort": 5,
+                    "title": "事业单位"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "100",
+                    "parentId": "17",
+                    "sort": 5,
+                    "title": "在职"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "101",
+                    "parentId": "17",
+                    "sort": 5,
+                    "title": "待业"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "102",
+                    "parentId": "17",
+                    "sort": 5,
+                    "title": "自主创业"
+                  }
+                ],
+                "industry": "标签",
+                "key": "17",
+                "parentId": "3",
+                "sort": 4,
+                "title": "就业状况"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "103",
+                    "parentId": "18",
+                    "sort": 5,
+                    "title": "白羊座"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "104",
+                    "parentId": "18",
+                    "sort": 5,
+                    "title": "金牛座"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "105",
+                    "parentId": "18",
+                    "sort": 5,
+                    "title": "双子座"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "106",
+                    "parentId": "18",
+                    "sort": 5,
+                    "title": "巨蟹座"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "107",
+                    "parentId": "18",
+                    "sort": 5,
+                    "title": "狮子座"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "108",
+                    "parentId": "18",
+                    "sort": 5,
+                    "title": "处女座"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "109",
+                    "parentId": "18",
+                    "sort": 5,
+                    "title": "天秤座"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "110",
+                    "parentId": "18",
+                    "sort": 5,
+                    "title": "天蝎座"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "111",
+                    "parentId": "18",
+                    "sort": 5,
+                    "title": "射手座"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "112",
+                    "parentId": "18",
+                    "sort": 5,
+                    "title": "摩羯座"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "113",
+                    "parentId": "18",
+                    "sort": 5,
+                    "title": "水瓶座"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "114",
+                    "parentId": "18",
+                    "sort": 5,
+                    "title": "双鱼座"
+                  }
+                ],
+                "industry": "标签",
+                "key": "18",
+                "parentId": "3",
+                "sort": 4,
+                "title": "星座"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "115",
+                    "parentId": "19",
+                    "sort": 5,
+                    "title": "CBD"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "116",
+                    "parentId": "19",
+                    "sort": 5,
+                    "title": "西单"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "117",
+                    "parentId": "19",
+                    "sort": 5,
+                    "title": "王府井"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "118",
+                    "parentId": "19",
+                    "sort": 5,
+                    "title": "朝外"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "119",
+                    "parentId": "19",
+                    "sort": 5,
+                    "title": "三里屯"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "120",
+                    "parentId": "19",
+                    "sort": 5,
+                    "title": "徐家汇"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "121",
+                    "parentId": "19",
+                    "sort": 5,
+                    "title": "环球港"
+                  }
+                ],
+                "industry": "标签",
+                "key": "19",
+                "parentId": "3",
+                "sort": 4,
+                "title": "所在商圈"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "122",
+                    "parentId": "20",
+                    "sort": 5,
+                    "title": "中国大陆"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "123",
+                    "parentId": "20",
+                    "sort": 5,
+                    "title": "中国香港"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "124",
+                    "parentId": "20",
+                    "sort": 5,
+                    "title": "中国澳门"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "125",
+                    "parentId": "20",
+                    "sort": 5,
+                    "title": "中国台湾"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "126",
+                    "parentId": "20",
+                    "sort": 5,
+                    "title": "其他"
+                  }
+                ],
+                "industry": "标签",
+                "key": "20",
+                "parentId": "3",
+                "sort": 4,
+                "title": "国籍"
+              }
+            ],
+            "industry": "用户特征",
+            "key": "3",
+            "parentId": "2",
+            "sort": 3,
+            "title": "人口属性"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "127",
+                    "parentId": "21",
+                    "sort": 5,
+                    "title": "近7天"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "128",
+                    "parentId": "21",
+                    "sort": 5,
+                    "title": "近14天"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "129",
+                    "parentId": "21",
+                    "sort": 5,
+                    "title": "近30天"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "130",
+                    "parentId": "21",
+                    "sort": 5,
+                    "title": "近60天"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "131",
+                    "parentId": "21",
+                    "sort": 5,
+                    "title": "近90天"
+                  }
+                ],
+                "industry": "标签",
+                "key": "21",
+                "parentId": "4",
+                "sort": 4,
+                "title": "消费周期"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "132",
+                    "parentId": "22",
+                    "sort": 5,
+                    "title": "超高"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "133",
+                    "parentId": "22",
+                    "sort": 5,
+                    "title": "高"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "134",
+                    "parentId": "22",
+                    "sort": 5,
+                    "title": "中上"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "135",
+                    "parentId": "22",
+                    "sort": 5,
+                    "title": "中"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "136",
+                    "parentId": "22",
+                    "sort": 5,
+                    "title": "中下"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "137",
+                    "parentId": "22",
+                    "sort": 5,
+                    "title": "低"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "138",
+                    "parentId": "22",
+                    "sort": 5,
+                    "title": "很低"
+                  }
+                ],
+                "industry": "标签",
+                "key": "22",
+                "parentId": "4",
+                "sort": 4,
+                "title": "消费能力"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "139",
+                    "parentId": "23",
+                    "sort": 5,
+                    "title": "1-999"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "140",
+                    "parentId": "23",
+                    "sort": 5,
+                    "title": "1000-2999"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "141",
+                    "parentId": "23",
+                    "sort": 5,
+                    "title": "3000-4999"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "142",
+                    "parentId": "23",
+                    "sort": 5,
+                    "title": "5000-9999"
+                  }
+                ],
+                "industry": "标签",
+                "key": "23",
+                "parentId": "4",
+                "sort": 4,
+                "title": "客单价"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "143",
+                    "parentId": "24",
+                    "sort": 5,
+                    "title": "支付宝"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "144",
+                    "parentId": "24",
+                    "sort": 5,
+                    "title": "微信"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "145",
+                    "parentId": "24",
+                    "sort": 5,
+                    "title": "储蓄卡"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "146",
+                    "parentId": "24",
+                    "sort": 5,
+                    "title": "信用卡"
+                  }
+                ],
+                "industry": "标签",
+                "key": "24",
+                "parentId": "4",
+                "sort": 4,
+                "title": "支付方式"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "147",
+                    "parentId": "25",
+                    "sort": 5,
+                    "title": "1-999"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "148",
+                    "parentId": "25",
+                    "sort": 5,
+                    "title": "1000-2999"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "149",
+                    "parentId": "25",
+                    "sort": 5,
+                    "title": "3000-4999"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "150",
+                    "parentId": "25",
+                    "sort": 5,
+                    "title": "5000-9999"
+                  }
+                ],
+                "industry": "标签",
+                "key": "25",
+                "parentId": "4",
+                "sort": 4,
+                "title": "单笔最高"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "151",
+                    "parentId": "26",
+                    "sort": 5,
+                    "title": "高"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "152",
+                    "parentId": "26",
+                    "sort": 5,
+                    "title": "中"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "153",
+                    "parentId": "26",
+                    "sort": 5,
+                    "title": "低"
+                  }
+                ],
+                "industry": "标签",
+                "key": "26",
+                "parentId": "4",
+                "sort": 4,
+                "title": "购买频率"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "154",
+                    "parentId": "27",
+                    "sort": 5,
+                    "title": "高"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "155",
+                    "parentId": "27",
+                    "sort": 5,
+                    "title": "中"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "156",
+                    "parentId": "27",
+                    "sort": 5,
+                    "title": "低"
+                  }
+                ],
+                "industry": "标签",
+                "key": "27",
+                "parentId": "4",
+                "sort": 4,
+                "title": "退货率"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "157",
+                    "parentId": "28",
+                    "sort": 5,
+                    "title": "高"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "158",
+                    "parentId": "28",
+                    "sort": 5,
+                    "title": "中"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "159",
+                    "parentId": "28",
+                    "sort": 5,
+                    "title": "低"
+                  }
+                ],
+                "industry": "标签",
+                "key": "28",
+                "parentId": "4",
+                "sort": 4,
+                "title": "换货率"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "160",
+                    "parentId": "29",
+                    "sort": 5,
+                    "title": "3折-4折"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "161",
+                    "parentId": "29",
+                    "sort": 5,
+                    "title": "5折-7折"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "162",
+                    "parentId": "29",
+                    "sort": 5,
+                    "title": "8折-9折"
+                  }
+                ],
+                "industry": "标签",
+                "key": "29",
+                "parentId": "4",
+                "sort": 4,
+                "title": "省钱小能手"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "163",
+                    "parentId": "30",
+                    "sort": 5,
+                    "title": "折扣券"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "164",
+                    "parentId": "30",
+                    "sort": 5,
+                    "title": "活动券"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "165",
+                    "parentId": "30",
+                    "sort": 5,
+                    "title": "积分换购"
+                  }
+                ],
+                "industry": "标签",
+                "key": "30",
+                "parentId": "4",
+                "sort": 4,
+                "title": "有券必买"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "166",
+                    "parentId": "31",
+                    "sort": 5,
+                    "title": "高"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "167",
+                    "parentId": "31",
+                    "sort": 5,
+                    "title": "中"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "168",
+                    "parentId": "31",
+                    "sort": 5,
+                    "title": "低"
+                  }
+                ],
+                "industry": "标签",
+                "key": "31",
+                "parentId": "4",
+                "sort": 4,
+                "title": "客服咨询频率"
+              }
+            ],
+            "industry": "消费特征",
+            "key": "4",
+            "parentId": "2",
+            "sort": 3,
+            "title": "商业属性"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "169",
+                    "parentId": "33",
+                    "sort": 5,
+                    "title": "1天内"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "170",
+                    "parentId": "33",
+                    "sort": 5,
+                    "title": "7天内"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "171",
+                    "parentId": "33",
+                    "sort": 5,
+                    "title": "14天内"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "172",
+                    "parentId": "33",
+                    "sort": 5,
+                    "title": "30天内"
+                  }
+                ],
+                "industry": "标签",
+                "key": "33",
+                "parentId": "5",
+                "sort": 4,
+                "title": "最近登录"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "173",
+                    "parentId": "34",
+                    "sort": 5,
+                    "title": "登录页"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "174",
+                    "parentId": "34",
+                    "sort": 5,
+                    "title": "首页"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "175",
+                    "parentId": "34",
+                    "sort": 5,
+                    "title": "分类页"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "176",
+                    "parentId": "34",
+                    "sort": 5,
+                    "title": "商品页"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "177",
+                    "parentId": "34",
+                    "sort": 5,
+                    "title": "我的订单页"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "178",
+                    "parentId": "34",
+                    "sort": 5,
+                    "title": "订单物流页"
+                  }
+                ],
+                "industry": "标签",
+                "key": "34",
+                "parentId": "5",
+                "sort": 4,
+                "title": "浏览页面"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "179",
+                    "parentId": "35",
+                    "sort": 5,
+                    "title": "1分钟内"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "180",
+                    "parentId": "35",
+                    "sort": 5,
+                    "title": "1-5分钟内"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "181",
+                    "parentId": "35",
+                    "sort": 5,
+                    "title": "5分钟以上"
+                  }
+                ],
+                "industry": "标签",
+                "key": "35",
+                "parentId": "5",
+                "sort": 4,
+                "title": "浏览时长"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "182",
+                    "parentId": "37",
+                    "sort": 5,
+                    "title": "经常"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "183",
+                    "parentId": "37",
+                    "sort": 5,
+                    "title": "偶尔"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "184",
+                    "parentId": "37",
+                    "sort": 5,
+                    "title": "很少"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "185",
+                    "parentId": "37",
+                    "sort": 5,
+                    "title": "从不"
+                  }
+                ],
+                "industry": "标签",
+                "key": "37",
+                "parentId": "5",
+                "sort": 4,
+                "title": "访问频率"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "186",
+                    "parentId": "38",
+                    "sort": 5,
+                    "title": "Windows"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "187",
+                    "parentId": "38",
+                    "sort": 5,
+                    "title": "Mac"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "188",
+                    "parentId": "38",
+                    "sort": 5,
+                    "title": "Linux"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "189",
+                    "parentId": "38",
+                    "sort": 5,
+                    "title": "Android"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "190",
+                    "parentId": "38",
+                    "sort": 5,
+                    "title": "IOS"
+                  }
+                ],
+                "industry": "标签",
+                "key": "38",
+                "parentId": "5",
+                "sort": 4,
+                "title": "设备类型"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "191",
+                    "parentId": "39",
+                    "sort": 5,
+                    "title": "1点-7点"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "192",
+                    "parentId": "39",
+                    "sort": 5,
+                    "title": "8点-12点"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "193",
+                    "parentId": "39",
+                    "sort": 5,
+                    "title": "13点-17点"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "194",
+                    "parentId": "39",
+                    "sort": 5,
+                    "title": "18点-21点"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "195",
+                    "parentId": "39",
+                    "sort": 5,
+                    "title": "22点-24点"
+                  }
+                ],
+                "industry": "标签",
+                "key": "39",
+                "parentId": "5",
+                "sort": 4,
+                "title": "浏览时段"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "196",
+                    "parentId": "40",
+                    "sort": 5,
+                    "title": "无"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "197",
+                    "parentId": "40",
+                    "sort": 5,
+                    "title": "较少"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "198",
+                    "parentId": "40",
+                    "sort": 5,
+                    "title": "一般"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "199",
+                    "parentId": "40",
+                    "sort": 5,
+                    "title": "经常"
+                  }
+                ],
+                "industry": "标签",
+                "key": "40",
+                "parentId": "5",
+                "sort": 4,
+                "title": "近7日登录频率"
+              },
+              {
+                "children": [],
+                "industry": "标签",
+                "key": "41",
+                "parentId": "5",
+                "sort": 4,
+                "title": "浏览商品"
+              },
+              {
+                "children": [],
+                "industry": "标签",
+                "key": "42",
+                "parentId": "5",
+                "sort": 4,
+                "title": "购买商品"
+              },
+              {
+                "children": [],
+                "industry": "标签",
+                "key": "43",
+                "parentId": "5",
+                "sort": 4,
+                "title": "商品偏好"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "200",
+                    "parentId": "44",
+                    "sort": 5,
+                    "title": "彩电"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "201",
+                    "parentId": "44",
+                    "sort": 5,
+                    "title": "厨房电器"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "202",
+                    "parentId": "44",
+                    "sort": 5,
+                    "title": "热水器"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "203",
+                    "parentId": "44",
+                    "sort": 5,
+                    "title": "冰箱"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "204",
+                    "parentId": "44",
+                    "sort": 5,
+                    "title": "洗衣机"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "205",
+                    "parentId": "44",
+                    "sort": 5,
+                    "title": "生活小电"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "206",
+                    "parentId": "44",
+                    "sort": 5,
+                    "title": "水家电"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "207",
+                    "parentId": "44",
+                    "sort": 5,
+                    "title": "空调"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "208",
+                    "parentId": "44",
+                    "sort": 5,
+                    "title": "冷柜"
+                  }
+                ],
+                "industry": "标签",
+                "key": "44",
+                "parentId": "5",
+                "sort": 4,
+                "title": "品类偏好"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "209",
+                    "parentId": "45",
+                    "sort": 5,
+                    "title": "海尔"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "210",
+                    "parentId": "45",
+                    "sort": 5,
+                    "title": "卡萨帝"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "211",
+                    "parentId": "45",
+                    "sort": 5,
+                    "title": "摩卡"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "212",
+                    "parentId": "45",
+                    "sort": 5,
+                    "title": "小超人"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "213",
+                    "parentId": "45",
+                    "sort": 5,
+                    "title": "统帅"
+                  }
+                ],
+                "industry": "标签",
+                "key": "45",
+                "parentId": "5",
+                "sort": 4,
+                "title": "品牌偏好"
+              }
+            ],
+            "industry": "兴趣特征",
+            "key": "5",
+            "parentId": "2",
+            "sort": 3,
+            "title": "行为属性"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "214",
+                    "parentId": "46",
+                    "sort": 5,
+                    "title": "有房无贷"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "215",
+                    "parentId": "46",
+                    "sort": 5,
+                    "title": "公积金贷款"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "216",
+                    "parentId": "46",
+                    "sort": 5,
+                    "title": "商业贷款"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "217",
+                    "parentId": "46",
+                    "sort": 5,
+                    "title": "无房"
+                  }
+                ],
+                "industry": "标签",
+                "key": "46",
+                "parentId": "6",
+                "sort": 4,
+                "title": "房产"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "218",
+                    "parentId": "47",
+                    "sort": 5,
+                    "title": "50w以内"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "219",
+                    "parentId": "47",
+                    "sort": 5,
+                    "title": "50-100w以内"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "220",
+                    "parentId": "47",
+                    "sort": 5,
+                    "title": "100-200w以内"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "221",
+                    "parentId": "47",
+                    "sort": 5,
+                    "title": "200-500w以内"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "222",
+                    "parentId": "47",
+                    "sort": 5,
+                    "title": "500w及以上"
+                  }
+                ],
+                "industry": "标签",
+                "key": "47",
+                "parentId": "6",
+                "sort": 4,
+                "title": "房产价值"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "223",
+                    "parentId": "48",
+                    "sort": 5,
+                    "title": "有车无贷"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "224",
+                    "parentId": "48",
+                    "sort": 5,
+                    "title": "有车有贷"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "225",
+                    "parentId": "48",
+                    "sort": 5,
+                    "title": "无车"
+                  }
+                ],
+                "industry": "标签",
+                "key": "48",
+                "parentId": "6",
+                "sort": 4,
+                "title": "车产"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "226",
+                    "parentId": "49",
+                    "sort": 5,
+                    "title": "10w以内"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "227",
+                    "parentId": "49",
+                    "sort": 5,
+                    "title": "10-20w以内"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "228",
+                    "parentId": "49",
+                    "sort": 5,
+                    "title": "20-30w以内"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "229",
+                    "parentId": "49",
+                    "sort": 5,
+                    "title": "30-50w以内"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "230",
+                    "parentId": "49",
+                    "sort": 5,
+                    "title": "50-70w以内"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "231",
+                    "parentId": "49",
+                    "sort": 5,
+                    "title": "70-100w以内"
+                  },
+                  {
+                    "children": [],
+                    "industry": "属性",
+                    "key": "232",
+                    "parentId": "49",
+                    "sort": 5,
+                    "title": "100w及以上"
+                  }
+                ],
+                "industry": "标签",
+                "key": "49",
+                "parentId": "6",
+                "sort": 4,
+                "title": "车产价值"
+              }
+            ],
+            "key": "6",
+            "parentId": "2",
+            "sort": 3,
+            "title": "用户价值"
+          }
+        ],
+        "industry": "子行业",
+        "key": "2",
+        "parentId": "1",
+        "sort": 2,
+        "title": "某商城"
+      }
+    ],
+    "industry": "电商",
+    "key": "1",
+    "parentId": "-1",
+    "sort": 1,
+    "title": "电商"
+  }
+]

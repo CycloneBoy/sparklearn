@@ -47,6 +47,13 @@
       <version>${hive.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.zeppelin</groupId>
+      <artifactId>zeppelin-jdbc</artifactId>
+      <version>0.9.0-preview1</version>
+    </dependency>
+
+
   </dependencies>
 
 

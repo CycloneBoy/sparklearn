@@ -29,6 +29,8 @@
     <module>log-analysis</module>
     <module>flink-learn</module>
     <module>phoenix-learn</module>
+    <module>zeppelin-learn</module>
+    <module>user-portrait</module>
 
   </modules>
 
