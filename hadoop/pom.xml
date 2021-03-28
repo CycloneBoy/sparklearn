@@ -27,7 +27,7 @@
     <lombok.version>1.18.8</lombok.version>
 
     <hadoop.version>2.10.0</hadoop.version>
-    <log4j.version>2.8.2</log4j.version>
+    <log4j.version>2.13.2</log4j.version>
 
     <JAVA_HOME>/home/sl/app/jdk1.8.0_221</JAVA_HOME>
   </properties>
