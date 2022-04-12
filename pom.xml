@@ -50,7 +50,7 @@
     <mysql.version>8.0.16</mysql.version>
 
     <!-- hadoop hive hbase spark  -->
-    <hadoop.version>2.7.2</hadoop.version>
+    <hadoop.version>3.2.3</hadoop.version>
     <hive.version>2.3.6</hive.version>
     <hbase.version>1.4.11</hbase.version>
     <flume.version>1.9.0</flume.version>
