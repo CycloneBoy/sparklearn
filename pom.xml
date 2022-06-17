@@ -65,7 +65,7 @@
 
 
     <apache.common.pool2.version>2.6.2</apache.common.pool2.version>
-    <fastjson.version>1.2.49</fastjson.version>
+    <fastjson.version>1.2.83</fastjson.version>
     <durid.version>1.1.13</durid.version>
     <joda.time.version>2.10.5</joda.time.version>
     <commons-lang3.version>3.9</commons-lang3.version>
