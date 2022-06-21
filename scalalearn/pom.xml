@@ -23,7 +23,7 @@
     <kafka.client.version>2.3.0</kafka.client.version>
     <spark.streaming.flume.version>2.2.2</spark.streaming.flume.version>
 
-    <mysql.version>8.0.16</mysql.version>
+    <mysql.version>8.0.28</mysql.version>
     <junit.version>4.12</junit.version>
     <opencsv.vesion>4.4</opencsv.vesion>
     <guava.vesion>19.0</guava.vesion>
