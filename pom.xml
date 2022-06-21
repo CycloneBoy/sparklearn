@@ -47,7 +47,7 @@
     <junit.version>4.12</junit.version>
     <lombok.version>1.18.8</lombok.version>
     <JAVA_HOME>/home/sl/app/jdk1.8.0_221</JAVA_HOME>
-    <mysql.version>8.0.16</mysql.version>
+    <mysql.version>8.0.28</mysql.version>
 
     <!-- hadoop hive hbase spark  -->
     <hadoop.version>2.7.2</hadoop.version>

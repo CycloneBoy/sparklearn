@@ -38,7 +38,7 @@
     <spark.kafka.version>1.6.3</spark.kafka.version>
     <spark.streaming.flume.version>2.2.2</spark.streaming.flume.version>
     <kafka.client.version>2.3.0</kafka.client.version>
-    <mysql.version>8.0.16</mysql.version>
+    <mysql.version>8.0.28</mysql.version>
 
     <apache.common.pool2.version>2.4.2</apache.common.pool2.version>
     <springboot.version>2.2.1.RELEASE</springboot.version>
